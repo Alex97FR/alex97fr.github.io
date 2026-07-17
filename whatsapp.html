@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11182b">
+  <title>生成 WhatsApp 链接</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0c1222; --panel:#172239; --field:#0c1528; --line:#2a3a58; --text:#f5f7fb; --muted:#91a0ba; --blue:#3b82f6; font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:var(--bg); color:var(--text); }
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    .layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    aside { padding:24px 18px; background:#121d34; border-right:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:12px; padding:0 8px 28px; color:var(--text); font-size:22px; font-weight:800; text-decoration:none; }
+    .logo { display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:var(--blue); }
+    .nav-title { margin:14px 10px 8px; color:#71809b; font-size:12px; letter-spacing:.12em; }
+    .nav-item { display:flex; align-items:center; gap:12px; width:100%; margin:3px 0; padding:13px 14px; border:0; border-radius:12px; color:var(--muted); text-align:left; text-decoration:none; }
+    .nav-item.active { background:var(--blue); color:#fff; }
+    .nav-icon { width:24px; text-align:center; font-size:18px; }
+    main { width:min(1420px,100%); margin:0 auto; padding:42px 36px 70px; }
+    h1 { margin:0; font-size:clamp(28px,4vw,38px); }
+    .subtitle { margin:10px 0 28px; color:var(--muted); font-size:17px; }
+    .card { margin-top:18px; padding:24px; border:1px solid var(--line); border-radius:18px; background:var(--panel); box-shadow:0 18px 50px #05091444; }
+    .options,.actions { display:flex; flex-wrap:wrap; align-items:end; gap:14px; }
+    label { display:grid; gap:8px; color:var(--muted); }
+    input { height:48px; min-width:150px; padding:0 14px; border:1px solid var(--line); border-radius:11px; outline:0; background:var(--field); color:var(--text); }
+    input:focus { border-color:var(--blue); box-shadow:0 0 0 3px #3b82f622; }
+    .button { min-height:48px; padding:0 20px; border:1px solid var(--line); border-radius:11px; background:var(--field); color:var(--text); font-weight:700; }
+    .button.primary { border-color:var(--blue); background:var(--blue); }
+    .button:disabled { cursor:not-allowed; opacity:.45; }
+    .status { min-height:24px; margin:14px 2px 0; color:var(--muted); }
+    .table { margin-top:22px; overflow:auto; border:1px solid var(--line); border-radius:14px; }
+    .head,.row { display:grid; grid-template-columns:minmax(260px,1fr) minmax(160px,.55fr) minmax(180px,.6fr) 48px; gap:12px; align-items:center; min-width:760px; padding:12px 18px; }
+    .head { background:var(--blue); color:#fff; font-weight:700; }
+    .row { border-top:1px solid var(--line); }
+    .link { min-width:0; overflow:hidden; color:var(--muted); text-overflow:ellipsis; white-space:nowrap; }
+    .row input { width:100%; min-width:0; }
+    .delete { width:40px; height:40px; border:0; border-radius:9px; background:transparent; color:var(--muted); font-size:22px; }
+    .delete:hover { color:#fff; background:#ffffff12; }
+    @media (max-width:760px) { .layout { display:block; } aside { padding:14px 16px; border-right:0; border-bottom:1px solid var(--line); } .brand { padding:0; } aside .nav-title { display:none; } .nav-item { display:none; } .nav-item.active { display:flex; margin-top:12px; } main { padding:28px 16px 50px; } .card { padding:16px; } .options label { flex:1 1 140px; } .actions .button { flex:1 1 130px; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <a class="brand" href="index.html"><span class="logo">工</span> 工具箱</a>
+      <div class="nav-title">工具</div>
+      <a class="nav-item" href="index.html"><span class="nav-icon">♟</span> 联系人转 VCF</a>
+      <a class="nav-item active" href="whatsapp.html"><span class="nav-icon">◌</span> 生成 WhatsApp 链接</a>
+    </aside>
+
+    <main>
+      <h1>生成 WhatsApp 链接</h1>
+      <p class="subtitle">填写姓名和号码，自动生成可复制的 WhatsApp 直达链接</p>
+
+      <section class="card options" aria-label="链接设置">
+        <label>姓名前缀<input id="name-prefix" placeholder="可不填" autocomplete="off"></label>
+        <label>号码前缀<input id="phone-prefix" placeholder="例如：国家区号" inputmode="numeric" autocomplete="off"></label>
+        <label>起始编号<input id="start-number" value="1" inputmode="numeric"></label>
+        <div class="actions">
+          <button id="copy" class="button primary" type="button">复制 A 列</button>
+          <button id="add" class="button" type="button">＋ 添加行</button>
+          <button id="clear" class="button" type="button">清空表格</button>
+        </div>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite">填写后可复制 A 列生成结果</p>
+      <section class="table" aria-label="WhatsApp 链接列表">
+        <div class="head"><span>WhatsApp 链接</span><span>线索名字</span><span>线索号码</span><span></span></div>
+        <div id="rows"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let rows = [{ name: '', phone: '' }, { name: '', phone: '' }, { name: '', phone: '' }];
+
+    const cleanNumber = value => value.replace(/\D/g, '');
+    const setting = id => $(id).value.trim();
+    const linkFor = value => `https://wa.me/${cleanNumber(setting('phone-prefix') + value)}`;
+    const resultFor = (contact, index, start) => `${start + index}- ${[
+      setting('name-prefix'), contact.name.trim(), setting('phone-prefix'), linkFor(contact.phone)
+    ].filter(Boolean).join(' ')}`;
+
+    function splitContact(value) {
+      const match = value.match(/\+?\d[\d\s().-]{5,}\d/);
+      return match ? { name: value.replace(match[0], '').trim(), phone: match[0].trim() } : null;
+    }
+
+    function pasteIntoRows(text, start, column) {
+      const cells = text.trimEnd().split(/\r?\n/).map(line => line.split('\t'));
+      cells.forEach((cell, offset) => {
+        const index = start + offset;
+        while (rows.length <= index) rows.push({ name: '', phone: '' });
+        if (cell.length > 1) Object.assign(rows[index], { name: cell[0].trim(), phone: cell[1].trim() });
+        else {
+          const contact = column === 'name' && splitContact(cell[0]);
+          Object.assign(rows[index], contact || { [column]: cell[0].trim() });
+        }
+      });
+      return cells.length;
+    }
+
+    function render() {
+      const box = $('rows');
+      const start = Number.parseInt(setting('start-number'), 10) || 1;
+      box.replaceChildren();
+      rows.forEach((contact, index) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        const link = document.createElement('span');
+        link.className = 'link';
+        link.textContent = resultFor(contact, index, start);
+        const name = document.createElement('input');
+        name.placeholder = '输入名字';
+        name.value = contact.name;
+        const phone = document.createElement('input');
+        phone.placeholder = '输入电话号码';
+        phone.inputMode = 'numeric';
+        phone.value = contact.phone;
+        const remove = document.createElement('button');
+        remove.className = 'delete';
+        remove.type = 'button';
+        remove.textContent = '×';
+        name.addEventListener('input', () => { rows[index].name = name.value; });
+        phone.addEventListener('input', () => { rows[index].phone = phone.value; render(); });
+        [name, phone].forEach((input, columnIndex) => input.addEventListener('paste', event => {
+          const text = event.clipboardData?.getData('text') || '';
+          const column = columnIndex ? 'phone' : 'name';
+          if (!/[\t\r\n]/.test(text) && !(column === 'name' && splitContact(text))) return;
+          event.preventDefault();
+          const count = pasteIntoRows(text, index, column);
+          $('status').textContent = `已粘贴 ${count} 行数据`;
+          render();
+        }));
+        remove.addEventListener('click', () => { rows.splice(index, 1); render(); });
+        row.append(link, name, phone, remove);
+        box.append(row);
+      });
+      $('copy').disabled = !rows.some(contact => contact.name.trim() || contact.phone.trim());
+    }
+
+    $('add').addEventListener('click', () => { rows.push({ name: '', phone: '' }); render(); });
+    $('clear').addEventListener('click', () => { rows = [{ name: '', phone: '' }]; render(); $('status').textContent = '表格已清空'; });
+    ['name-prefix', 'phone-prefix', 'start-number'].forEach(id => $(id).addEventListener('input', render));
+    $('copy').addEventListener('click', async () => {
+      const start = Number.parseInt(setting('start-number'), 10) || 1;
+      const results = rows.map((contact, index) => resultFor(contact, index, start)).filter((_, index) => rows[index].name.trim() || rows[index].phone.trim()).join('\n');
+      try { await navigator.clipboard.writeText(results); }
+      catch { const area = document.createElement('textarea'); area.value = results; document.body.append(area); area.select(); document.execCommand('copy'); area.remove(); }
+      $('status').textContent = `已复制 ${results.split('\n').length} 条 A 列结果`;
+    });
+
+    console.assert(cleanNumber('+00 123-456') === '00123456', '号码清理自检失败');
+    console.assert(resultFor({ name: '示例名称', phone: '00000000000' }, 0, 1).includes('https://wa.me/00000000000'), 'A 列生成自检失败');
+    console.assert(pasteIntoRows('示例甲\t00000000000\n示例乙\t00000000001', 0, 'name') === 2, '表格粘贴自检失败');
+    rows = [{ name: '', phone: '' }, { name: '', phone: '' }, { name: '', phone: '' }];
+    render();
+  </script>
+</body>
+</html>
