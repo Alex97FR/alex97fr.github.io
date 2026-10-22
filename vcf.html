@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="免费在线批量生成 VCF 通讯录。联系人在浏览器本地处理，支持中文姓名、国际号码及自定义前后缀。">
   <title>Everyday Tools</title>
   <link rel="stylesheet" href="styles.css?v=4">
@@ -169,14 +170,37 @@
       $('source').focus();
     });
 
+    function showToast(message) {
+      if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return;
+      let box = document.getElementById('toast-container');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'toast-container';
+        box.className = 'toast-container';
+        box.setAttribute('aria-live', 'polite');
+        document.body.appendChild(box);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      box.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove && toast.remove(), 250);
+      }, 2200);
+    }
+
     $('download').addEventListener('click', () => {
       if (!contacts.length) return;
+      const count = contacts.length;
       const url = URL.createObjectURL(new Blob([makeVcf()], { type: 'text/vcard;charset=utf-8' }));
       const link = document.createElement('a');
       link.href = url;
       link.download = `contacts-${new Date().toISOString().slice(0, 10)}.vcf`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`已生成并下载 ${count} 位联系人 VCF`);
     });
 
     ['prefix', 'suffix', 'phone-suffix'].forEach(id => $(id).addEventListener('input', render));

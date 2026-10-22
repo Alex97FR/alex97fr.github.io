@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
   <link rel="stylesheet" href="styles.css?v=4">
@@ -169,6 +170,27 @@
       $('rows').querySelector('input').focus();
     });
     ['name-prefix', 'phone-prefix', 'start-number'].forEach(id => $(id).addEventListener('input', updateResults));
+    function showToast(message) {
+      if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return;
+      let box = document.getElementById('toast-container');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'toast-container';
+        box.className = 'toast-container';
+        box.setAttribute('aria-live', 'polite');
+        document.body.appendChild(box);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      box.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove && toast.remove(), 250);
+      }, 2200);
+    }
+
     $('copy').addEventListener('click', async () => {
       const valid = rows.filter(contact => linkFor(contact.phone));
       if (!valid.length) return;
@@ -189,6 +211,7 @@
       $('status').textContent = copied
         ? '已复制 ' + valid.length + ' 条结果' + (skipped ? '，跳过 ' + skipped + ' 行无效号码' : '') + '。'
         : '浏览器未允许复制，请手动选中结果复制，或在 HTTPS 网站中重试。';
+      if (copied) showToast(`已复制 ${valid.length} 条 WhatsApp 链接`);
     });
     render();
   </script>

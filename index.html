@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Everyday Tools 常用工具箱：联系人转 VCF、批量生成 WhatsApp 链接、本地待办清单。免费使用，无需注册，输入内容在浏览器本地处理。">
   <title>Everyday Tools</title>
   <link rel="stylesheet" href="styles.css?v=4">
@@ -26,7 +27,12 @@
     <main id="main" tabindex="-1">
       <header class="page-header">
         <h1>常用工具</h1>
-        <p class="intro">免费使用，数据在浏览器本地处理。</p>
+        <p class="intro">免费使用，纯本地处理，保护隐私安全。</p>
+        <div class="trust-badges">
+          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>本地处理 · 零上传</span>
+          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>纯静态秒开</span>
+          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>无需登录注册</span>
+        </div>
       </header>
 
       <section id="tools" class="tool-directory" aria-label="全部工具">
