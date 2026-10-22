@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
   <meta name="description" content="全球手机区号与世界时差速查：按电话区号或国家查询当地时间、时差对比、工作与休息时段，支持固定常看国家时钟看板。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -426,14 +426,17 @@
         let statusText = '🟢 适宜沟通';
         let statusClass = 'work';
         let statusTip = '当地处于正常工作时段 (09:00 - 18:00)';
+        let statusSummary = '正常工作时段 (09-18)';
         if (hour >= 22 || hour < 7) {
           statusText = '🟣 深夜休息';
           statusClass = 'rest';
           statusTip = '当地处于深夜睡眠时段，建议避免消息打扰';
+          statusSummary = '夜间睡眠时段';
         } else if ((hour >= 7 && hour < 9) || (hour >= 18 && hour < 22)) {
           statusText = '🟡 非工作时段';
           statusClass = 'evening';
           statusTip = '当地处于早晚私人时段，可沟通非紧急事项';
+          statusSummary = '早晚私人时间';
         }
 
         const dayProgress = ((hour * 60 + minute) / 1440) * 100;
@@ -441,7 +444,7 @@
         return {
           timeStr, secStr, dateStr, hour, minute, second,
           diffText, diffClass, diffHours,
-          statusText, statusClass, statusTip, dayProgress
+          statusText, statusClass, statusTip, statusSummary, dayProgress
         };
       } catch {
         return null;
@@ -516,7 +519,7 @@
         </div>
         <div class="contact-status-bar">
           <span class="status-pill ${info.statusClass}" title="${info.statusTip}">${info.statusText}</span>
-          <a href="whatsapp.html" class="button ghost" style="padding:4px 9px;min-height:30px;font-size:11.5px;" title="使用该国家区号生成 WhatsApp 链接">WhatsApp →</a>
+          <span style="font-size:11.5px;color:var(--muted);">${info.statusSummary}</span>
         </div>
       `;
 
