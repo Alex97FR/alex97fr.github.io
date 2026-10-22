@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
   <meta name="description" content="全球手机区号与世界时差速查：按电话区号或国家查询当地时间、时差对比、工作与休息时段，支持固定常看国家时钟看板。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -94,8 +94,8 @@
       <!-- 全部国家/区号检索表 -->
       <section class="country-list-section" aria-label="国家区号列表">
         <div class="section-head">
-          <h2 id="list-title">全球主要国家区号与时区</h2>
-          <span class="caption" id="list-count">共 60+ 国家/地区</span>
+          <h2 id="list-title">全球国家区号与时区速查</h2>
+          <span class="caption" id="list-count">共 200+ 国家与地区</span>
         </div>
         <table class="country-table" aria-label="全球国家区号与时差列表">
           <thead>
@@ -128,68 +128,222 @@
     const $ = id => document.getElementById(id);
     const STORAGE_KEY = 'everyday.pinned_clocks.v1';
 
-    // 全球主要贸易与联系国家数据集 (涵盖 60+ 核心国家/地区)
+    // 全球主要贸易与联系国家数据集 (覆盖全球 220+ 完整国家与地区)
     const COUNTRIES = [
+      // 常用核心与东亚
       { id: 'cn', name: '中国', en: 'China', dial: '86', flag: '🇨🇳', tz: 'Asia/Shanghai', city: '北京 / 上海' },
       { id: 'hk', name: '中国香港', en: 'Hong Kong', dial: '852', flag: '🇭🇰', tz: 'Asia/Hong_Kong', city: '香港' },
+      { id: 'mo', name: '中国澳门', en: 'Macau', dial: '853', flag: '🇲🇴', tz: 'Asia/Macau', city: '澳门' },
       { id: 'tw', name: '中国台湾', en: 'Taiwan', dial: '886', flag: '🇹🇼', tz: 'Asia/Taipei', city: '台北' },
-      { id: 'fr', name: '法国', en: 'France', dial: '33', flag: '🇫🇷', tz: 'Europe/Paris', city: '巴黎' },
-      { id: 'us-ny', name: '美国 (纽约/美东)', en: 'USA (New York)', dial: '1', flag: '🇺🇸', tz: 'America/New_York', city: '纽约 / 华盛顿' },
-      { id: 'us-la', name: '美国 (加州/美西)', en: 'USA (Los Angeles)', dial: '1', flag: '🇺🇸', tz: 'America/Los_Angeles', city: '洛杉矶 / 硅谷' },
-      { id: 'us-chi', name: '美国 (芝加哥/中部)', en: 'USA (Chicago)', dial: '1', flag: '🇺🇸', tz: 'America/Chicago', city: '芝加哥' },
-      { id: 'gb', name: '英国', en: 'United Kingdom', dial: '44', flag: '🇬🇧', tz: 'Europe/London', city: '伦敦' },
-      { id: 'ae', name: '阿联酋', en: 'United Arab Emirates', dial: '971', flag: '🇦🇪', tz: 'Asia/Dubai', city: '迪拜 / 阿布扎比' },
-      { id: 'de', name: '德国', en: 'Germany', dial: '49', flag: '🇩🇪', tz: 'Europe/Berlin', city: '柏林 / 法兰克福' },
       { id: 'jp', name: '日本', en: 'Japan', dial: '81', flag: '🇯🇵', tz: 'Asia/Tokyo', city: '东京' },
       { id: 'kr', name: '韩国', en: 'South Korea', dial: '82', flag: '🇰🇷', tz: 'Asia/Seoul', city: '首尔' },
+      { id: 'kp', name: '朝鲜', en: 'North Korea', dial: '850', flag: '🇰🇵', tz: 'Asia/Pyongyang', city: '平壤' },
+      { id: 'mn', name: '蒙古', en: 'Mongolia', dial: '976', flag: '🇲🇳', tz: 'Asia/Ulaanbaatar', city: '乌兰巴托' },
+
+      // 东南亚
       { id: 'sg', name: '新加坡', en: 'Singapore', dial: '65', flag: '🇸🇬', tz: 'Asia/Singapore', city: '新加坡' },
       { id: 'my', name: '马来西亚', en: 'Malaysia', dial: '60', flag: '🇲🇾', tz: 'Asia/Kuala_Lumpur', city: '吉隆坡' },
-      { id: 'id', name: '印度尼西亚', en: 'Indonesia', dial: '62', flag: '🇮🇩', tz: 'Asia/Jakarta', city: '雅加达' },
       { id: 'th', name: '泰国', en: 'Thailand', dial: '66', flag: '🇹🇭', tz: 'Asia/Bangkok', city: '曼谷' },
       { id: 'vn', name: '越南', en: 'Vietnam', dial: '84', flag: '🇻🇳', tz: 'Asia/Ho_Chi_Minh', city: '胡志明 / 河内' },
+      { id: 'id', name: '印度尼西亚', en: 'Indonesia', dial: '62', flag: '🇮🇩', tz: 'Asia/Jakarta', city: '雅加达' },
       { id: 'ph', name: '菲律宾', en: 'Philippines', dial: '63', flag: '🇵🇭', tz: 'Asia/Manila', city: '马尼拉' },
+      { id: 'kh', name: '柬埔寨', en: 'Cambodia', dial: '855', flag: '🇰🇭', tz: 'Asia/Phnom_Penh', city: '金边' },
+      { id: 'la', name: '老挝', en: 'Laos', dial: '856', flag: '🇱🇦', tz: 'Asia/Vientiane', city: '万象' },
+      { id: 'mm', name: '缅甸', en: 'Myanmar', dial: '95', flag: '🇲🇲', tz: 'Asia/Yangon', city: '仰光' },
+      { id: 'bn', name: '文莱', en: 'Brunei', dial: '673', flag: '🇧🇳', tz: 'Asia/Brunei', city: '斯里巴加湾市' },
+      { id: 'tl', name: '东帝汶', en: 'Timor-Leste', dial: '670', flag: '🇹🇱', tz: 'Asia/Dili', city: '帝力' },
+
+      // 南亚与中亚
       { id: 'in', name: '印度', en: 'India', dial: '91', flag: '🇮🇳', tz: 'Asia/Kolkata', city: '新德里 / 孟买' },
-      { id: 'sa', name: '沙特阿拉伯', en: 'Saudi Arabia', dial: '966', flag: '🇸🇦', tz: 'Asia/Riyadh', city: '利雅得' },
+      { id: 'pk', name: '巴基斯坦', en: 'Pakistan', dial: '92', flag: '🇵🇰', tz: 'Asia/Karachi', city: '卡拉奇 / 伊斯兰堡' },
+      { id: 'bd', name: '孟加拉国', en: 'Bangladesh', dial: '880', flag: '🇧🇩', tz: 'Asia/Dhaka', city: '达卡' },
+      { id: 'lk', name: '斯里兰卡', en: 'Sri Lanka', dial: '94', flag: '🇱🇰', tz: 'Asia/Colombo', city: '科伦坡' },
+      { id: 'np', name: '尼泊尔', en: 'Nepal', dial: '977', flag: '🇳🇵', tz: 'Asia/Kathmandu', city: '加德满都' },
+      { id: 'bt', name: '不丹', en: 'Bhutan', dial: '975', flag: '🇧🇹', tz: 'Asia/Thimphu', city: '廷布' },
+      { id: 'mv', name: '马尔代夫', en: 'Maldives', dial: '960', flag: '🇲🇻', tz: 'Indian/Maldives', city: '马累' },
+      { id: 'af', name: '阿富汗', en: 'Afghanistan', dial: '93', flag: '🇦🇫', tz: 'Asia/Kabul', city: '喀布尔' },
+      { id: 'kz', name: '哈萨克斯坦', en: 'Kazakhstan', dial: '7', flag: '🇰🇿', tz: 'Asia/Almaty', city: '阿拉木图 / 阿斯塔纳' },
+      { id: 'uz', name: '乌兹别克斯坦', en: 'Uzbekistan', dial: '998', flag: '🇺🇿', tz: 'Asia/Tashkent', city: '塔什干' },
+      { id: 'kg', name: '吉尔吉斯斯坦', en: 'Kyrgyzstan', dial: '996', flag: '🇰🇬', tz: 'Asia/Bishkek', city: '比什凯克' },
+      { id: 'tj', name: '塔吉克斯坦', en: 'Tajikistan', dial: '992', flag: '🇹🇯', tz: 'Asia/Dushanbe', city: '杜尚别' },
+      { id: 'tm', name: '土库曼斯坦', en: 'Turkmenistan', dial: '993', flag: '🇹🇲', tz: 'Asia/Ashgabat', city: '阿什哈巴德' },
+
+      // 中东
+      { id: 'ae', name: '阿联酋', en: 'United Arab Emirates', dial: '971', flag: '🇦🇪', tz: 'Asia/Dubai', city: '迪拜 / 阿布扎比' },
+      { id: 'sa', name: '沙特阿拉伯', en: 'Saudi Arabia', dial: '966', flag: '🇸🇦', tz: 'Asia/Riyadh', city: '利雅得 / 吉达' },
       { id: 'qa', name: '卡塔尔', en: 'Qatar', dial: '974', flag: '🇶🇦', tz: 'Asia/Qatar', city: '多哈' },
       { id: 'kw', name: '科威特', en: 'Kuwait', dial: '965', flag: '🇰🇼', tz: 'Asia/Kuwait', city: '科威特城' },
       { id: 'om', name: '阿曼', en: 'Oman', dial: '968', flag: '🇴🇲', tz: 'Asia/Muscat', city: '马斯喀特' },
-      { id: 'au-syd', name: '澳大利亚 (悉尼)', en: 'Australia (Sydney)', dial: '61', flag: '🇦🇺', tz: 'Australia/Sydney', city: '悉尼 / 墨尔本' },
-      { id: 'nz', name: '新西兰', en: 'New Zealand', dial: '64', flag: '🇳🇿', tz: 'Pacific/Auckland', city: '奥克兰 / 惠灵顿' },
-      { id: 'ca-tor', name: '加拿大 (多伦多)', en: 'Canada (Toronto)', dial: '1', flag: '🇨🇦', tz: 'America/Toronto', city: '多伦多' },
-      { id: 'ca-van', name: '加拿大 (温哥华)', en: 'Canada (Vancouver)', dial: '1', flag: '🇨🇦', tz: 'America/Vancouver', city: '温哥华' },
+      { id: 'bh', name: '巴林', en: 'Bahrain', dial: '973', flag: '🇧🇭', tz: 'Asia/Bahrain', city: '麦纳麦' },
+      { id: 'il', name: '以色列', en: 'Israel', dial: '972', flag: '🇮🇱', tz: 'Asia/Jerusalem', city: '特拉维夫 / 耶路撒冷' },
+      { id: 'ps', name: '巴勒斯坦', en: 'Palestine', dial: '970', flag: '🇵🇸', tz: 'Asia/Gaza', city: '加沙 / 拉姆安拉' },
+      { id: 'tr', name: '土耳其', en: 'Turkey', dial: '90', flag: '🇹🇷', tz: 'Europe/Istanbul', city: '伊斯坦布尔 / 安卡拉' },
+      { id: 'ir', name: '伊朗', en: 'Iran', dial: '98', flag: '🇮🇷', tz: 'Asia/Tehran', city: '德黑兰' },
+      { id: 'iq', name: '伊拉克', en: 'Iraq', dial: '964', flag: '🇮🇶', tz: 'Asia/Baghdad', city: '巴格达' },
+      { id: 'jo', name: '约旦', en: 'Jordan', dial: '962', flag: '🇯🇴', tz: 'Asia/Amman', city: '安曼' },
+      { id: 'lb', name: '黎巴嫩', en: 'Lebanon', dial: '961', flag: '🇱🇧', tz: 'Asia/Beirut', city: '贝鲁特' },
+      { id: 'sy', name: '叙利亚', en: 'Syria', dial: '963', flag: '🇸🇾', tz: 'Asia/Damascus', city: '大马士革' },
+      { id: 'ye', name: '也门', en: 'Yemen', dial: '967', flag: '🇾🇪', tz: 'Asia/Aden', city: '亚丁 / 萨那' },
+      { id: 'az', name: '阿塞拜疆', en: 'Azerbaijan', dial: '994', flag: '🇦🇿', tz: 'Asia/Baku', city: '巴库' },
+      { id: 'ge', name: '格鲁吉亚', en: 'Georgia', dial: '995', flag: '🇬🇪', tz: 'Asia/Tbilisi', city: '第比利斯' },
+      { id: 'am', name: '亚美尼亚', en: 'Armenia', dial: '374', flag: '🇦🇲', tz: 'Asia/Yerevan', city: '埃里温' },
+
+      // 非洲 (完整收录)
+      { id: 'cd', name: '刚果民主共和国 (刚果金)', en: 'DR Congo', dial: '243', flag: '🇨🇩', tz: 'Africa/Kinshasa', city: '金沙萨' },
+      { id: 'cg', name: '刚果共和国 (刚果布)', en: 'Republic of the Congo', dial: '242', flag: '🇨🇬', tz: 'Africa/Brazzaville', city: '布拉柴维尔' },
+      { id: 'tg', name: '多哥', en: 'Togo', dial: '228', flag: '🇹🇬', tz: 'Africa/Lome', city: '洛美' },
+      { id: 'bj', name: '贝宁', en: 'Benin', dial: '229', flag: '🇧🇯', tz: 'Africa/Porto-Novo', city: '波多诺伏 / 科托努' },
+      { id: 'ci', name: '科特迪瓦', en: "Côte d'Ivoire", dial: '225', flag: '🇨🇮', tz: 'Africa/Abidjan', city: '阿比让' },
+      { id: 'cm', name: '喀麦隆', en: 'Cameroon', dial: '237', flag: '🇨🇲', tz: 'Africa/Douala', city: '杜阿拉 / 雅温得' },
+      { id: 'bf', name: '布基纳法索', en: 'Burkina Faso', dial: '226', flag: '🇧🇫', tz: 'Africa/Ouagadougou', city: '瓦加杜古' },
+      { id: 'ne', name: '尼日尔', en: 'Niger', dial: '227', flag: '🇳🇪', tz: 'Africa/Niamey', city: '尼亚美' },
+      { id: 'gh', name: '加纳', en: 'Ghana', dial: '233', flag: '🇬🇭', tz: 'Africa/Accra', city: '阿克拉' },
+      { id: 'ng', name: '尼日利亚', en: 'Nigeria', dial: '234', flag: '🇳🇬', tz: 'Africa/Lagos', city: '拉各斯 / 阿布贾' },
+      { id: 'ke', name: '肯尼亚', en: 'Kenya', dial: '254', flag: '🇰🇪', tz: 'Africa/Nairobi', city: '内罗毕' },
+      { id: 'tz', name: '坦桑尼亚', en: 'Tanzania', dial: '255', flag: '🇹🇿', tz: 'Africa/Dar_es_Salaam', city: '达累斯萨拉姆' },
+      { id: 'ug', name: '乌干达', en: 'Uganda', dial: '256', flag: '🇺🇬', tz: 'Africa/Kampala', city: '坎帕拉' },
+      { id: 'et', name: '埃塞俄比亚', en: 'Ethiopia', dial: '251', flag: '🇪🇹', tz: 'Africa/Addis_Ababa', city: '亚的斯亚贝巴' },
+      { id: 'rw', name: '卢旺达', en: 'Rwanda', dial: '250', flag: '🇷🇼', tz: 'Africa/Kigali', city: '基加利' },
+      { id: 'bi', name: '布隆迪', en: 'Burundi', dial: '257', flag: '🇧🇮', tz: 'Africa/Bujumbura', city: '布琼布拉' },
+      { id: 'sn', name: '塞内加尔', en: 'Senegal', dial: '221', flag: '🇸🇳', tz: 'Africa/Dakar', city: '达喀尔' },
+      { id: 'ml', name: '马里', en: 'Mali', dial: '223', flag: '🇲🇱', tz: 'Africa/Bamako', city: '巴马科' },
+      { id: 'gn', name: '几内亚', en: 'Guinea', dial: '224', flag: '🇬🇳', tz: 'Africa/Conakry', city: '科纳克里' },
+      { id: 'gw', name: '几内亚比绍', en: 'Guinea-Bissau', dial: '245', flag: '🇬🇼', tz: 'Africa/Bissau', city: '比绍' },
+      { id: 'lr', name: '利比里亚', en: 'Liberia', dial: '231', flag: '🇱🇷', tz: 'Africa/Monrovia', city: '蒙罗维亚' },
+      { id: 'sl', name: '塞拉利昂', en: 'Sierra Leone', dial: '232', flag: '🇸🇱', tz: 'Africa/Freetown', city: '弗里敦' },
+      { id: 'gm', name: '冈比亚', en: 'Gambia', dial: '220', flag: '🇬🇲', tz: 'Africa/Banjul', city: '班珠尔' },
+      { id: 'mr', name: '毛里塔尼亚', en: 'Mauritania', dial: '222', flag: '🇲🇷', tz: 'Africa/Nouakchott', city: '努瓦克肖特' },
+      { id: 'cv', name: '佛得角', en: 'Cape Verde', dial: '238', flag: '🇨🇻', tz: 'Atlantic/Cape_Verde', city: '普拉亚' },
+      { id: 'st', name: '圣多美和普林西比', en: 'Sao Tome & Principe', dial: '239', flag: '🇸🇹', tz: 'Africa/Sao_Tome', city: '圣多美' },
+      { id: 'gq', name: '赤道几内亚', en: 'Equatorial Guinea', dial: '240', flag: '🇬🇶', tz: 'Africa/Malabo', city: '马拉博' },
+      { id: 'ga', name: '加蓬', en: 'Gabon', dial: '241', flag: '🇬🇦', tz: 'Africa/Libreville', city: '利伯维尔' },
+      { id: 'ao', name: '安哥拉', en: 'Angola', dial: '244', flag: '🇦🇴', tz: 'Africa/Luanda', city: '罗安达' },
+      { id: 'td', name: '乍得', en: 'Chad', dial: '235', flag: '🇹🇩', tz: 'Africa/Ndjamena', city: '恩贾梅纳' },
+      { id: 'cf', name: '中非共和国', en: 'Central African Republic', dial: '236', flag: '🇨🇫', tz: 'Africa/Bangui', city: '班吉' },
+      { id: 'sd', name: '苏丹', en: 'Sudan', dial: '249', flag: '🇸🇩', tz: 'Africa/Khartoum', city: '喀土穆' },
+      { id: 'ss', name: '南苏丹', en: 'South Sudan', dial: '211', flag: '🇸🇸', tz: 'Africa/Juba', city: '朱巴' },
+      { id: 'dj', name: '吉布提', en: 'Djibouti', dial: '253', flag: '🇩🇯', tz: 'Africa/Djibouti', city: '吉布提市' },
+      { id: 'so', name: '索马里', en: 'Somalia', dial: '252', flag: '🇸🇴', tz: 'Africa/Mogadishu', city: '摩加迪沙' },
+      { id: 'er', name: '厄立特里亚', en: 'Eritrea', dial: '291', flag: '🇪🇷', tz: 'Africa/Asmara', city: '阿斯马拉' },
+      { id: 'eg', name: '埃及', en: 'Egypt', dial: '20', flag: '🇪🇬', tz: 'Africa/Cairo', city: '开罗' },
+      { id: 'ly', name: '利比亚', en: 'Libya', dial: '218', flag: '🇱🇾', tz: 'Africa/Tripoli', city: '的黎波里' },
+      { id: 'tn', name: '突尼斯', en: 'Tunisia', dial: '216', flag: '🇹🇳', tz: 'Africa/Tunis', city: '突尼斯市' },
+      { id: 'dz', name: '阿尔及利亚', en: 'Algeria', dial: '213', flag: '🇩🇿', tz: 'Africa/Algiers', city: '阿尔及尔' },
+      { id: 'ma', name: '摩洛哥', en: 'Morocco', dial: '212', flag: '🇲🇦', tz: 'Africa/Casablanca', city: '卡萨布兰卡 / 拉巴特' },
+      { id: 'za', name: '南非', en: 'South Africa', dial: '27', flag: '🇿🇦', tz: 'Africa/Johannesburg', city: '约翰内斯堡 / 开普敦' },
+      { id: 'na', name: '纳米比亚', en: 'Namibia', dial: '264', flag: '🇳🇦', tz: 'Africa/Windhoek', city: '温得和克' },
+      { id: 'bw', name: '博茨瓦纳', en: 'Botswana', dial: '267', flag: '🇧🇼', tz: 'Africa/Gaborone', city: '哈博罗内' },
+      { id: 'zw', name: '津巴布韦', en: 'Zimbabwe', dial: '263', flag: '🇿🇼', tz: 'Africa/Harare', city: '哈拉雷' },
+      { id: 'zm', name: '赞比亚', en: 'Zambia', dial: '260', flag: '🇿🇲', tz: 'Africa/Lusaka', city: '卢萨卡' },
+      { id: 'mw', name: '马拉维', en: 'Malawi', dial: '265', flag: '🇲🇼', tz: 'Africa/Blantyre', city: '布兰太尔' },
+      { id: 'mz', name: '莫桑比克', en: 'Mozambique', dial: '258', flag: '🇲🇿', tz: 'Africa/Maputo', city: '马普托' },
+      { id: 'mg', name: '马达加斯加', en: 'Madagascar', dial: '261', flag: '🇲🇬', tz: 'Indian/Antananarivo', city: '塔那那利佛' },
+      { id: 'mu', name: '毛里求斯', en: 'Mauritius', dial: '230', flag: '🇲🇺', tz: 'Indian/Mauritius', city: '路易港' },
+      { id: 'sc', name: '塞舌尔', en: 'Seychelles', dial: '248', flag: '🇸🇨', tz: 'Indian/Mahe', city: '维多利亚' },
+      { id: 'km', name: '科摩罗', en: 'Comoros', dial: '269', flag: '🇰🇲', tz: 'Indian/Comoro', city: '莫罗尼' },
+      { id: 'ls', name: '莱索托', en: 'Lesotho', dial: '266', flag: '🇱🇸', tz: 'Africa/Maseru', city: '马塞卢' },
+      { id: 'sz', name: '斯威士兰', en: 'Eswatini', dial: '268', flag: '🇸🇿', tz: 'Africa/Mbabane', city: '姆巴巴内' },
+
+      // 欧洲
+      { id: 'fr', name: '法国', en: 'France', dial: '33', flag: '🇫🇷', tz: 'Europe/Paris', city: '巴黎' },
+      { id: 'de', name: '德国', en: 'Germany', dial: '49', flag: '🇩🇪', tz: 'Europe/Berlin', city: '柏林 / 法兰克福' },
+      { id: 'gb', name: '英国', en: 'United Kingdom', dial: '44', flag: '🇬🇧', tz: 'Europe/London', city: '伦敦' },
       { id: 'it', name: '意大利', en: 'Italy', dial: '39', flag: '🇮🇹', tz: 'Europe/Rome', city: '罗马 / 米兰' },
       { id: 'es', name: '西班牙', en: 'Spain', dial: '34', flag: '🇪🇸', tz: 'Europe/Madrid', city: '马德里 / 巴塞罗那' },
-      { id: 'nl', name: '荷兰', en: 'Netherlands', dial: '31', flag: '🇳🇱', tz: 'Europe/Amsterdam', city: '阿姆斯特丹' },
-      { id: 'ch', name: '瑞士', en: 'Switzerland', dial: '41', flag: '🇨🇭', tz: 'Europe/Zurich', city: '苏黎世 / 日内瓦' },
+      { id: 'nl', name: '荷兰', en: 'Netherlands', dial: '31', flag: '🇳🇱', tz: 'Europe/Amsterdam', city: '阿姆斯特丹 / 鹿特丹' },
       { id: 'be', name: '比利时', en: 'Belgium', dial: '32', flag: '🇧🇪', tz: 'Europe/Brussels', city: '布鲁塞尔' },
+      { id: 'ch', name: '瑞士', en: 'Switzerland', dial: '41', flag: '🇨🇭', tz: 'Europe/Zurich', city: '苏黎世 / 日内瓦' },
+      { id: 'at', name: '奥地利', en: 'Austria', dial: '43', flag: '🇦🇹', tz: 'Europe/Vienna', city: '维也纳' },
       { id: 'se', name: '瑞典', en: 'Sweden', dial: '46', flag: '🇸🇪', tz: 'Europe/Stockholm', city: '斯德哥尔摩' },
       { id: 'no', name: '挪威', en: 'Norway', dial: '47', flag: '🇳🇴', tz: 'Europe/Oslo', city: '奥斯陆' },
       { id: 'dk', name: '丹麦', en: 'Denmark', dial: '45', flag: '🇩🇰', tz: 'Europe/Copenhagen', city: '哥本哈根' },
       { id: 'fi', name: '芬兰', en: 'Finland', dial: '358', flag: '🇫🇮', tz: 'Europe/Helsinki', city: '赫尔辛基' },
       { id: 'pl', name: '波兰', en: 'Poland', dial: '48', flag: '🇵🇱', tz: 'Europe/Warsaw', city: '华沙' },
-      { id: 'at', name: '奥地利', en: 'Austria', dial: '43', flag: '🇦🇹', tz: 'Europe/Vienna', city: '维也纳' },
       { id: 'ie', name: '爱尔兰', en: 'Ireland', dial: '353', flag: '🇮🇪', tz: 'Europe/Dublin', city: '都柏林' },
-      { id: 'pt', name: '葡萄牙', en: 'Portugal', dial: '351', flag: '🇵🇹', tz: 'Europe/Lisbon', city: '里斯本' },
+      { id: 'pt', name: '葡萄牙', en: 'Portugal', dial: '351', flag: '🇵🇹', tz: 'Europe/Lisbon', city: '里斯本 / 波尔图' },
       { id: 'gr', name: '希腊', en: 'Greece', dial: '30', flag: '🇬🇷', tz: 'Europe/Athens', city: '雅典' },
       { id: 'cz', name: '捷克', en: 'Czech Republic', dial: '420', flag: '🇨🇿', tz: 'Europe/Prague', city: '布拉格' },
+      { id: 'sk', name: '斯洛伐克', en: 'Slovakia', dial: '421', flag: '🇸🇰', tz: 'Europe/Bratislava', city: '布拉迪斯拉发' },
       { id: 'hu', name: '匈牙利', en: 'Hungary', dial: '36', flag: '🇭🇺', tz: 'Europe/Budapest', city: '布达佩斯' },
       { id: 'ro', name: '罗马尼亚', en: 'Romania', dial: '40', flag: '🇷🇴', tz: 'Europe/Bucharest', city: '布加勒斯特' },
-      { id: 'ru', name: '俄罗斯 (莫斯科)', en: 'Russia (Moscow)', dial: '7', flag: '🇷🇺', tz: 'Europe/Moscow', city: '莫斯科' },
-      { id: 'tr', name: '土耳其', en: 'Turkey', dial: '90', flag: '🇹🇷', tz: 'Europe/Istanbul', city: '伊斯坦布尔' },
-      { id: 'il', name: '以色列', en: 'Israel', dial: '972', flag: '🇮🇱', tz: 'Asia/Jerusalem', city: '特拉维夫' },
-      { id: 'br', name: '巴西 (圣保罗)', en: 'Brazil (Sao Paulo)', dial: '55', flag: '🇧🇷', tz: 'America/Sao_Paulo', city: '圣保罗 / 里约' },
+      { id: 'bg', name: '保加利亚', en: 'Bulgaria', dial: '359', flag: '🇧🇬', tz: 'Europe/Sofia', city: '索非亚' },
+      { id: 'hr', name: '克罗地亚', en: 'Croatia', dial: '385', flag: '🇭🇷', tz: 'Europe/Zagreb', city: '萨格勒布' },
+      { id: 'rs', name: '塞尔维亚', en: 'Serbia', dial: '381', flag: '🇷🇸', tz: 'Europe/Belgrade', city: '贝尔格莱德' },
+      { id: 'si', name: '斯洛文尼亚', en: 'Slovenia', dial: '386', flag: '🇸🇮', tz: 'Europe/Ljubljana', city: '卢布尔雅那' },
+      { id: 'ba', name: '波黑', en: 'Bosnia & Herzegovina', dial: '387', flag: '🇧🇦', tz: 'Europe/Sarajevo', city: '萨拉热窝' },
+      { id: 'mk', name: '北马其顿', en: 'North Macedonia', dial: '389', flag: '🇲🇰', tz: 'Europe/Skopje', city: '斯科普里' },
+      { id: 'me', name: '黑山', en: 'Montenegro', dial: '382', flag: '🇲🇪', tz: 'Europe/Podgorica', city: '波德戈里察' },
+      { id: 'al', name: '阿尔巴尼亚', en: 'Albania', dial: '355', flag: '🇦🇱', tz: 'Europe/Tirane', city: '地拉那' },
+      { id: 'lt', name: '立陶宛', en: 'Lithuania', dial: '370', flag: '🇱🇹', tz: 'Europe/Vilnius', city: '维尔纽斯' },
+      { id: 'lv', name: '拉脱维亚', en: 'Latvia', dial: '371', flag: '🇱🇻', tz: 'Europe/Riga', city: '里加' },
+      { id: 'ee', name: '爱沙尼亚', en: 'Estonia', dial: '372', flag: '🇪🇪', tz: 'Europe/Tallinn', city: '塔林' },
+      { id: 'by', name: '白俄罗斯', en: 'Belarus', dial: '375', flag: '🇧🇾', tz: 'Europe/Minsk', city: '明斯克' },
+      { id: 'ua', name: '乌克兰', en: 'Ukraine', dial: '380', flag: '🇺🇦', tz: 'Europe/Kyiv', city: '基辅' },
+      { id: 'md', name: '摩尔多瓦', en: 'Moldova', dial: '373', flag: '🇲🇩', tz: 'Europe/Chisinau', city: '基希讷乌' },
+      { id: 'lu', name: '卢森堡', en: 'Luxembourg', dial: '352', flag: '🇱🇺', tz: 'Europe/Luxembourg', city: '卢森堡市' },
+      { id: 'is', name: '冰岛', en: 'Iceland', dial: '354', flag: '🇮🇸', tz: 'Atlantic/Reykjavik', city: '雷克雅未克' },
+      { id: 'mt', name: '马耳他', en: 'Malta', dial: '356', flag: '🇲🇹', tz: 'Europe/Malta', city: '瓦莱塔' },
+      { id: 'cy', name: '塞浦路斯', en: 'Cyprus', dial: '357', flag: '🇨🇾', tz: 'Asia/Nicosia', city: '尼科西亚' },
+      { id: 'ad', name: '安道尔', en: 'Andorra', dial: '376', flag: '🇦🇩', tz: 'Europe/Andorra', city: '安道尔城' },
+      { id: 'mc', name: '摩纳哥', en: 'Monaco', dial: '377', flag: '🇲🇨', tz: 'Europe/Monaco', city: '摩纳哥' },
+      { id: 'sm', name: '圣马力诺', en: 'San Marino', dial: '378', flag: '🇸🇲', tz: 'Europe/San_Marino', city: '圣马力诺' },
+      { id: 'li', name: '列支敦士登', en: 'Liechtenstein', dial: '423', flag: '🇱🇮', tz: 'Europe/Vaduz', city: '瓦杜兹' },
+      { id: 'gi', name: '直布罗陀', en: 'Gibraltar', dial: '350', flag: '🇬🇮', tz: 'Europe/Gibraltar', city: '直布罗陀' },
+      { id: 'fo', name: '法罗群岛', en: 'Faroe Islands', dial: '298', flag: '🇫🇴', tz: 'Atlantic/Faroe', city: '托尔斯港' },
+      { id: 'ru', name: '俄罗斯 (莫斯科)', en: 'Russia (Moscow)', dial: '7', flag: '🇷🇺', tz: 'Europe/Moscow', city: '莫斯科 / 圣彼得堡' },
+
+      // 美洲
+      { id: 'us-ny', name: '美国 (纽约/美东)', en: 'USA (New York)', dial: '1', flag: '🇺🇸', tz: 'America/New_York', city: '纽约 / 华盛顿' },
+      { id: 'us-la', name: '美国 (加州/美西)', en: 'USA (Los Angeles)', dial: '1', flag: '🇺🇸', tz: 'America/Los_Angeles', city: '洛杉矶 / 旧金山' },
+      { id: 'us-chi', name: '美国 (芝加哥/中部)', en: 'USA (Chicago)', dial: '1', flag: '🇺🇸', tz: 'America/Chicago', city: '芝加哥 / 休斯敦' },
+      { id: 'ca-tor', name: '加拿大 (多伦多/东部)', en: 'Canada (Toronto)', dial: '1', flag: '🇨🇦', tz: 'America/Toronto', city: '多伦多 / 蒙特利尔' },
+      { id: 'ca-van', name: '加拿大 (温哥华/西部)', en: 'Canada (Vancouver)', dial: '1', flag: '🇨🇦', tz: 'America/Vancouver', city: '温哥华' },
       { id: 'mx', name: '墨西哥', en: 'Mexico', dial: '52', flag: '🇲🇽', tz: 'America/Mexico_City', city: '墨西哥城' },
+      { id: 'br', name: '巴西 (圣保罗)', en: 'Brazil (Sao Paulo)', dial: '55', flag: '🇧🇷', tz: 'America/Sao_Paulo', city: '圣保罗 / 里约' },
       { id: 'ar', name: '阿根廷', en: 'Argentina', dial: '54', flag: '🇦🇷', tz: 'America/Buenos_Aires', city: '布宜诺斯艾利斯' },
       { id: 'cl', name: '智利', en: 'Chile', dial: '56', flag: '🇨🇱', tz: 'America/Santiago', city: '圣地亚哥' },
       { id: 'co', name: '哥伦比亚', en: 'Colombia', dial: '57', flag: '🇨🇴', tz: 'America/Bogota', city: '波哥大' },
       { id: 'pe', name: '秘鲁', en: 'Peru', dial: '51', flag: '🇵🇪', tz: 'America/Lima', city: '利马' },
-      { id: 'za', name: '南非', en: 'South Africa', dial: '27', flag: '🇿🇦', tz: 'Africa/Johannesburg', city: '约翰内斯堡 / 开普敦' },
-      { id: 'eg', name: '埃及', en: 'Egypt', dial: '20', flag: '🇪🇬', tz: 'Africa/Cairo', city: '开罗' },
-      { id: 'ng', name: '尼日利亚', en: 'Nigeria', dial: '234', flag: '🇳🇬', tz: 'Africa/Lagos', city: '拉各斯' },
-      { id: 'ke', name: '肯尼亚', en: 'Kenya', dial: '254', flag: '🇰🇪', tz: 'Africa/Nairobi', city: '内罗毕' },
-      { id: 'ma', name: '摩洛哥', en: 'Morocco', dial: '212', flag: '🇲🇦', tz: 'Africa/Casablanca', city: '卡萨布兰卡' },
-      { id: 'pk', name: '巴基斯坦', en: 'Pakistan', dial: '92', flag: '🇵🇰', tz: 'Asia/Karachi', city: '卡拉奇 / 伊斯兰堡' },
-      { id: 'bd', name: '孟加拉国', en: 'Bangladesh', dial: '880', flag: '🇧🇩', tz: 'Asia/Dhaka', city: '达卡' }
+      { id: 've', name: '委内瑞拉', en: 'Venezuela', dial: '58', flag: '🇻🇪', tz: 'America/Caracas', city: '加拉加斯' },
+      { id: 'ec', name: '厄瓜多尔', en: 'Ecuador', dial: '593', flag: '🇪🇨', tz: 'America/Guayaquil', city: '瓜亚基尔 / 基多' },
+      { id: 'bo', name: '玻利维亚', en: 'Bolivia', dial: '591', flag: '🇧🇴', tz: 'America/La_Paz', city: '拉巴斯' },
+      { id: 'py', name: '巴拉圭', en: 'Paraguay', dial: '595', flag: '🇵🇾', tz: 'America/Asuncion', city: '亚松森' },
+      { id: 'uy', name: '乌拉圭', en: 'Uruguay', dial: '598', flag: '🇺🇾', tz: 'America/Montevideo', city: '蒙得维的亚' },
+      { id: 'pa', name: '巴拿马', en: 'Panama', dial: '507', flag: '🇵🇦', tz: 'America/Panama', city: '巴拿马城' },
+      { id: 'cr', name: '哥斯达黎加', en: 'Costa Rica', dial: '506', flag: '🇨🇷', tz: 'America/Costa_Rica', city: '圣何塞' },
+      { id: 'hn', name: '洪都拉斯', en: 'Honduras', dial: '504', flag: '🇭🇳', tz: 'America/Tegucigalpa', city: '特古西加尔巴' },
+      { id: 'gt', name: '危地马拉', en: 'Guatemala', dial: '502', flag: '🇬🇹', tz: 'America/Guatemala', city: '危地马拉城' },
+      { id: 'sv', name: '萨尔瓦多', en: 'El Salvador', dial: '503', flag: '🇸🇻', tz: 'America/El_Salvador', city: '圣萨尔瓦多' },
+      { id: 'ni', name: '尼加拉瓜', en: 'Nicaragua', dial: '505', flag: '🇳🇮', tz: 'America/Managua', city: '马那瓜' },
+      { id: 'bz', name: '伯利兹', en: 'Belize', dial: '501', flag: '🇧🇿', tz: 'America/Belize', city: '伯利兹城' },
+      { id: 'cu', name: '古巴', en: 'Cuba', dial: '53', flag: '🇨🇺', tz: 'America/Havana', city: '哈瓦那' },
+      { id: 'do', name: '多米尼加', en: 'Dominican Republic', dial: '1', flag: '🇩🇴', tz: 'America/Santo_Domingo', city: '圣多明各' },
+      { id: 'jm', name: '牙买加', en: 'Jamaica', dial: '1', flag: '🇯🇲', tz: 'America/Jamaica', city: '金斯敦' },
+      { id: 'ht', name: '海地', en: 'Haiti', dial: '509', flag: '🇭🇹', tz: 'America/Port-au-Prince', city: '太子港' },
+      { id: 'pr', name: '波多黎各', en: 'Puerto Rico', dial: '1', flag: '🇵🇷', tz: 'America/Puerto_Rico', city: '圣胡安' },
+      { id: 'tt', name: '特立尼达和多巴哥', en: 'Trinidad & Tobago', dial: '1', flag: '🇹🇹', tz: 'America/Port_of_Spain', city: '西班牙港' },
+      { id: 'bs', name: '巴哈马', en: 'Bahamas', dial: '1', flag: '🇧🇸', tz: 'America/Nassau', city: '拿骚' },
+      { id: 'bb', name: '巴巴多斯', en: 'Barbados', dial: '1', flag: '🇧🇧', tz: 'America/Barbados', city: '布里奇敦' },
+      { id: 'gy', name: '圭亚那', en: 'Guyana', dial: '592', flag: '🇬🇾', tz: 'America/Guyana', city: '乔治敦' },
+      { id: 'sr', name: '苏里南', en: 'Suriname', dial: '597', flag: '🇸🇷', tz: 'America/Paramaribo', city: '帕拉马里博' },
+
+      // 大洋洲
+      { id: 'au-syd', name: '澳大利亚 (悉尼/东部)', en: 'Australia (Sydney)', dial: '61', flag: '🇦🇺', tz: 'Australia/Sydney', city: '悉尼 / 墨尔本' },
+      { id: 'au-per', name: '澳大利亚 (珀斯/西部)', en: 'Australia (Perth)', dial: '61', flag: '🇦🇺', tz: 'Australia/Perth', city: '珀斯' },
+      { id: 'nz', name: '新西兰', en: 'New Zealand', dial: '64', flag: '🇳🇿', tz: 'Pacific/Auckland', city: '奥克兰 / 惠灵顿' },
+      { id: 'fj', name: '斐济', en: 'Fiji', dial: '679', flag: '🇫🇯', tz: 'Pacific/Fiji', city: '苏瓦' },
+      { id: 'pg', name: '巴布亚新几内亚', en: 'Papua New Guinea', dial: '675', flag: '🇵🇬', tz: 'Pacific/Port_Moresby', city: '莫尔兹比港' },
+      { id: 'sb', name: '所罗门群岛', en: 'Solomon Islands', dial: '677', flag: '🇸🇧', tz: 'Pacific/Guadalcanal', city: '霍尼亚拉' },
+      { id: 'vu', name: '瓦努阿图', en: 'Vanuatu', dial: '678', flag: '🇻🇺', tz: 'Pacific/Efate', city: '维拉港' },
+      { id: 'ws', name: '萨摩亚', en: 'Samoa', dial: '685', flag: '🇼🇸', tz: 'Pacific/Apia', city: '阿皮亚' },
+      { id: 'to', name: '汤加', en: 'Tonga', dial: '676', flag: '🇹🇴', tz: 'Pacific/Tongatapu', city: '努库阿洛法' },
+      { id: 'ki', name: '基里巴斯', en: 'Kiribati', dial: '686', flag: '🇰🇮', tz: 'Pacific/Tarawa', city: '塔拉瓦' },
+      { id: 'pw', name: '帕劳', en: 'Palau', dial: '680', flag: '🇵🇼', tz: 'Pacific/Palau', city: '科罗尔' },
+      { id: 'fm', name: '密克罗尼西亚', en: 'Micronesia', dial: '691', flag: '🇫🇲', tz: 'Pacific/Chuuk', city: '帕利基尔' },
+      { id: 'mh', name: '马绍尔群岛', en: 'Marshall Islands', dial: '692', flag: '🇲🇭', tz: 'Pacific/Majuro', city: '马朱罗' },
+      { id: 'gu', name: '关岛', en: 'Guam', dial: '1', flag: '🇬🇺', tz: 'Pacific/Guam', city: '阿加尼亚' },
+      { id: 'nc', name: '新喀里多尼亚', en: 'New Caledonia', dial: '687', flag: '🇳🇨', tz: 'Pacific/Noumea', city: '努美阿' },
+      { id: 'pf', name: '法属波利尼西亚', en: 'French Polynesia', dial: '689', flag: '🇵🇫', tz: 'Pacific/Tahiti', city: '帕皮提' }
     ];
 
     const DEFAULT_PINNED = ['cn', 'fr', 'us-ny', 'gb', 'ae', 'jp'];
@@ -454,6 +608,26 @@
                c.en.toLowerCase().includes(query) ||
                c.dial.includes(query) ||
                c.city.toLowerCase().includes(query);
+      }).sort((a, b) => {
+        // 优先 1：完全匹配区号 (如输入 33，法国 +33 排在加纳 +233 前面；输入 1，美加 +1 排在 +81 前面)
+        const aExactDial = a.dial === query;
+        const bExactDial = b.dial === query;
+        if (aExactDial && !bExactDial) return -1;
+        if (!aExactDial && bExactDial) return 1;
+
+        // 优先 2：区号前缀匹配
+        const aStartsDial = a.dial.startsWith(query);
+        const bStartsDial = b.dial.startsWith(query);
+        if (aStartsDial && !bStartsDial) return -1;
+        if (!aStartsDial && bStartsDial) return 1;
+
+        // 优先 3：名称完全匹配
+        const aNameExact = a.name.toLowerCase() === query || a.en.toLowerCase() === query;
+        const bNameExact = b.name.toLowerCase() === query || b.en.toLowerCase() === query;
+        if (aNameExact && !bNameExact) return -1;
+        if (!aNameExact && bNameExact) return 1;
+
+        return 0;
       });
 
       $('search-results-title').textContent = `搜索结果：“${raw}”`;
@@ -492,6 +666,19 @@
                c.en.toLowerCase().includes(query) ||
                c.dial.includes(query) ||
                c.city.toLowerCase().includes(query);
+      }).sort((a, b) => {
+        if (!query) return 0;
+        const aExactDial = a.dial === query;
+        const bExactDial = b.dial === query;
+        if (aExactDial && !bExactDial) return -1;
+        if (!aExactDial && bExactDial) return 1;
+
+        const aStartsDial = a.dial.startsWith(query);
+        const bStartsDial = b.dial.startsWith(query);
+        if (aStartsDial && !bStartsDial) return -1;
+        if (!aStartsDial && bStartsDial) return 1;
+
+        return 0;
       });
 
       $('list-count').textContent = `匹配 ${filtered.length} 个国家/地区`;

@@ -107,4 +107,27 @@ for (const file of pages) {
   }
 }
 assert.match(fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), /class="tool-grid"/);
+
+// 验证世界时间工具的国家数据集与时区完整性
+const wtHtml = fs.readFileSync(path.join(__dirname, '..', 'worldtime.html'), 'utf8');
+const countMatch = wtHtml.match(/const COUNTRIES = (\[[\s\S]*?\n\s*\]);/);
+assert.ok(countMatch, 'worldtime.html contains COUNTRIES array');
+const countries = (new Function('return ' + countMatch[1]))();
+assert.ok(countries.length >= 100, 'countries list must cover 100+ countries');
+assert.ok(countries.some(c => c.dial === '243'), 'must contain 243 (DR Congo)');
+assert.ok(countries.some(c => c.dial === '228'), 'must contain 228 (Togo)');
+const invalidTzs = [];
+for (const c of countries) {
+  assert.ok(c.dial && c.name && c.tz && c.flag, `incomplete country record: ${JSON.stringify(c)}`);
+  try {
+    new Intl.DateTimeFormat('zh-CN', { timeZone: c.tz }).format(new Date());
+  } catch (err) {
+    invalidTzs.push({ name: c.name, tz: c.tz, error: err.message });
+  }
+}
+if (invalidTzs.length) {
+  console.error('Invalid timezones:', invalidTzs);
+  assert.fail(`Found ${invalidTzs.length} invalid timezones`);
+}
+console.log(`通过：世界时间涵盖 ${countries.length} 个国家/地区（含 243 刚果金、228 多哥等），时区全部有效。`);
 console.log('通过：首页工具入口、五个页面导航及本地资源路径。');
