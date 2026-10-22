@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="全球手机区号与世界时差速查：按电话区号或国家查询当地时间、时差对比、工作与休息时段，支持固定常看国家时钟看板。">
+  <title>Everyday Tools</title>
+  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('embedded');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
+</head>
+<body class="tool-page">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <div class="layout">
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html"><span class="logo"><img src="favicon.svg?v=3" width="34" height="34" alt=""></span>Everyday Tools</a>
+        <nav class="site-nav" aria-label="主导航">
+          <a class="nav-item" href="index.html">全部工具</a>
+          <a class="nav-item" href="vcf.html">VCF 通讯录</a>
+          <a class="nav-item" href="whatsapp.html">WhatsApp</a>
+          <a class="nav-item" href="todo.html">待办清单</a>
+          <a class="nav-item active" href="worldtime.html" aria-current="page">世界时间</a>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换浅色/深色模式" title="切换浅色/深色模式">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <header class="page-header">
+        <h1>世界时间与区号时差</h1>
+        <p class="intro">按手机区号或国家查询当前时间与相对时差，智能提示客户工作或休息时段，支持固定多个国家看板。</p>
+      </header>
+
+      <!-- 本地时间看板主卡片 -->
+      <section class="local-clock-card" aria-label="我的本地时间">
+        <div class="local-clock-head">
+          <div class="live-badge"><span class="live-pulse"></span>我的本地时间</div>
+          <div class="local-tz-tag"><svg viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--muted);"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M12 2a14.5 14.5 0 0 1 0 20M2 12h20"/></svg><span id="local-tz-name">本地时区</span></div>
+        </div>
+        <div class="local-clock-body">
+          <div class="big-clock"><span id="local-time">--:--</span><span class="sec" id="local-sec">:--</span></div>
+          <div class="local-date-meta">
+            <span id="local-date" style="font-weight:600;color:var(--text);">----年--月--日 星期-</span>
+            <span id="local-offset">UTC 时差计算中...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 搜索栏与快捷推荐 -->
+      <section class="clock-search-section" aria-label="搜索区号或国家">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="search-input" placeholder="输入区号 (如 33, +86, 1) 或国家名称 (如 法国, 阿联酋, Dubai, Japan)..." autocomplete="off" spellcheck="false">
+          <button id="search-clear" class="search-clear-btn" type="button" aria-label="清空搜索" hidden>×</button>
+        </div>
+        <div class="quick-tags">
+          <span class="quick-tag-label">快捷查询：</span>
+          <button class="quick-tag" type="button" data-q="86">🇨🇳 中国 +86</button>
+          <button class="quick-tag" type="button" data-q="33">🇫🇷 法国 +33</button>
+          <button class="quick-tag" type="button" data-q="1">🇺🇸 美国 +1</button>
+          <button class="quick-tag" type="button" data-q="971">🇦🇪 阿联酋 +971</button>
+          <button class="quick-tag" type="button" data-q="44">🇬🇧 英国 +44</button>
+          <button class="quick-tag" type="button" data-q="81">🇯🇵 日本 +81</button>
+          <button class="quick-tag" type="button" data-q="49">🇩🇪 德国 +49</button>
+        </div>
+      </section>
+
+      <!-- 固定看板网格 -->
+      <section aria-label="固定时钟看板">
+        <div class="board-header">
+          <h2><svg viewBox="0 0 24 24" style="width:19px;height:19px;color:var(--blue);"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>固定看板 <span class="caption" id="pinned-count">6 个国家</span></h2>
+          <button id="reset-pinned" class="button ghost" type="button">恢复默认看板</button>
+        </div>
+        <div class="clock-grid" id="pinned-grid"></div>
+      </section>
+
+      <!-- 全部国家/区号检索表 -->
+      <section class="country-list-section" aria-label="国家区号列表">
+        <div class="section-head">
+          <h2 id="list-title">全球主要国家区号与时区</h2>
+          <span class="caption" id="list-count">共 60+ 国家/地区</span>
+        </div>
+        <table class="country-table" aria-label="全球国家区号与时差列表">
+          <thead>
+            <tr>
+              <th>国家 / 地区</th>
+              <th>手机区号</th>
+              <th>当前当地时间</th>
+              <th>相对时差</th>
+              <th>适宜沟通状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="country-table-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div id="privacy" class="footer-privacy">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span><strong>数据与隐私</strong>：所有时间根据浏览器本地引擎计算，不上传任何查询记录。固定看板保存在当前浏览器。</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const STORAGE_KEY = 'everyday.pinned_clocks.v1';
+
+    // 全球主要贸易与联系国家数据集 (涵盖 60+ 核心国家/地区)
+    const COUNTRIES = [
+      { id: 'cn', name: '中国', en: 'China', dial: '86', flag: '🇨🇳', tz: 'Asia/Shanghai', city: '北京 / 上海' },
+      { id: 'hk', name: '中国香港', en: 'Hong Kong', dial: '852', flag: '🇭🇰', tz: 'Asia/Hong_Kong', city: '香港' },
+      { id: 'tw', name: '中国台湾', en: 'Taiwan', dial: '886', flag: '🇹🇼', tz: 'Asia/Taipei', city: '台北' },
+      { id: 'fr', name: '法国', en: 'France', dial: '33', flag: '🇫🇷', tz: 'Europe/Paris', city: '巴黎' },
+      { id: 'us-ny', name: '美国 (纽约/美东)', en: 'USA (New York)', dial: '1', flag: '🇺🇸', tz: 'America/New_York', city: '纽约 / 华盛顿' },
+      { id: 'us-la', name: '美国 (加州/美西)', en: 'USA (Los Angeles)', dial: '1', flag: '🇺🇸', tz: 'America/Los_Angeles', city: '洛杉矶 / 硅谷' },
+      { id: 'us-chi', name: '美国 (芝加哥/中部)', en: 'USA (Chicago)', dial: '1', flag: '🇺🇸', tz: 'America/Chicago', city: '芝加哥' },
+      { id: 'gb', name: '英国', en: 'United Kingdom', dial: '44', flag: '🇬🇧', tz: 'Europe/London', city: '伦敦' },
+      { id: 'ae', name: '阿联酋', en: 'United Arab Emirates', dial: '971', flag: '🇦🇪', tz: 'Asia/Dubai', city: '迪拜 / 阿布扎比' },
+      { id: 'de', name: '德国', en: 'Germany', dial: '49', flag: '🇩🇪', tz: 'Europe/Berlin', city: '柏林 / 法兰克福' },
+      { id: 'jp', name: '日本', en: 'Japan', dial: '81', flag: '🇯🇵', tz: 'Asia/Tokyo', city: '东京' },
+      { id: 'kr', name: '韩国', en: 'South Korea', dial: '82', flag: '🇰🇷', tz: 'Asia/Seoul', city: '首尔' },
+      { id: 'sg', name: '新加坡', en: 'Singapore', dial: '65', flag: '🇸🇬', tz: 'Asia/Singapore', city: '新加坡' },
+      { id: 'my', name: '马来西亚', en: 'Malaysia', dial: '60', flag: '🇲🇾', tz: 'Asia/Kuala_Lumpur', city: '吉隆坡' },
+      { id: 'id', name: '印度尼西亚', en: 'Indonesia', dial: '62', flag: '🇮🇩', tz: 'Asia/Jakarta', city: '雅加达' },
+      { id: 'th', name: '泰国', en: 'Thailand', dial: '66', flag: '🇹🇭', tz: 'Asia/Bangkok', city: '曼谷' },
+      { id: 'vn', name: '越南', en: 'Vietnam', dial: '84', flag: '🇻🇳', tz: 'Asia/Ho_Chi_Minh', city: '胡志明 / 河内' },
+      { id: 'ph', name: '菲律宾', en: 'Philippines', dial: '63', flag: '🇵🇭', tz: 'Asia/Manila', city: '马尼拉' },
+      { id: 'in', name: '印度', en: 'India', dial: '91', flag: '🇮🇳', tz: 'Asia/Kolkata', city: '新德里 / 孟买' },
+      { id: 'sa', name: '沙特阿拉伯', en: 'Saudi Arabia', dial: '966', flag: '🇸🇦', tz: 'Asia/Riyadh', city: '利雅得' },
+      { id: 'qa', name: '卡塔尔', en: 'Qatar', dial: '974', flag: '🇶🇦', tz: 'Asia/Qatar', city: '多哈' },
+      { id: 'kw', name: '科威特', en: 'Kuwait', dial: '965', flag: '🇰🇼', tz: 'Asia/Kuwait', city: '科威特城' },
+      { id: 'om', name: '阿曼', en: 'Oman', dial: '968', flag: '🇴🇲', tz: 'Asia/Muscat', city: '马斯喀特' },
+      { id: 'au-syd', name: '澳大利亚 (悉尼)', en: 'Australia (Sydney)', dial: '61', flag: '🇦🇺', tz: 'Australia/Sydney', city: '悉尼 / 墨尔本' },
+      { id: 'nz', name: '新西兰', en: 'New Zealand', dial: '64', flag: '🇳🇿', tz: 'Pacific/Auckland', city: '奥克兰 / 惠灵顿' },
+      { id: 'ca-tor', name: '加拿大 (多伦多)', en: 'Canada (Toronto)', dial: '1', flag: '🇨🇦', tz: 'America/Toronto', city: '多伦多' },
+      { id: 'ca-van', name: '加拿大 (温哥华)', en: 'Canada (Vancouver)', dial: '1', flag: '🇨🇦', tz: 'America/Vancouver', city: '温哥华' },
+      { id: 'it', name: '意大利', en: 'Italy', dial: '39', flag: '🇮🇹', tz: 'Europe/Rome', city: '罗马 / 米兰' },
+      { id: 'es', name: '西班牙', en: 'Spain', dial: '34', flag: '🇪🇸', tz: 'Europe/Madrid', city: '马德里 / 巴塞罗那' },
+      { id: 'nl', name: '荷兰', en: 'Netherlands', dial: '31', flag: '🇳🇱', tz: 'Europe/Amsterdam', city: '阿姆斯特丹' },
+      { id: 'ch', name: '瑞士', en: 'Switzerland', dial: '41', flag: '🇨🇭', tz: 'Europe/Zurich', city: '苏黎世 / 日内瓦' },
+      { id: 'be', name: '比利时', en: 'Belgium', dial: '32', flag: '🇧🇪', tz: 'Europe/Brussels', city: '布鲁塞尔' },
+      { id: 'se', name: '瑞典', en: 'Sweden', dial: '46', flag: '🇸🇪', tz: 'Europe/Stockholm', city: '斯德哥尔摩' },
+      { id: 'no', name: '挪威', en: 'Norway', dial: '47', flag: '🇳🇴', tz: 'Europe/Oslo', city: '奥斯陆' },
+      { id: 'dk', name: '丹麦', en: 'Denmark', dial: '45', flag: '🇩🇰', tz: 'Europe/Copenhagen', city: '哥本哈根' },
+      { id: 'fi', name: '芬兰', en: 'Finland', dial: '358', flag: '🇫🇮', tz: 'Europe/Helsinki', city: '赫尔辛基' },
+      { id: 'pl', name: '波兰', en: 'Poland', dial: '48', flag: '🇵🇱', tz: 'Europe/Warsaw', city: '华沙' },
+      { id: 'at', name: '奥地利', en: 'Austria', dial: '43', flag: '🇦🇹', tz: 'Europe/Vienna', city: '维也纳' },
+      { id: 'ie', name: '爱尔兰', en: 'Ireland', dial: '353', flag: '🇮🇪', tz: 'Europe/Dublin', city: '都柏林' },
+      { id: 'pt', name: '葡萄牙', en: 'Portugal', dial: '351', flag: '🇵🇹', tz: 'Europe/Lisbon', city: '里斯本' },
+      { id: 'gr', name: '希腊', en: 'Greece', dial: '30', flag: '🇬🇷', tz: 'Europe/Athens', city: '雅典' },
+      { id: 'cz', name: '捷克', en: 'Czech Republic', dial: '420', flag: '🇨🇿', tz: 'Europe/Prague', city: '布拉格' },
+      { id: 'hu', name: '匈牙利', en: 'Hungary', dial: '36', flag: '🇭🇺', tz: 'Europe/Budapest', city: '布达佩斯' },
+      { id: 'ro', name: '罗马尼亚', en: 'Romania', dial: '40', flag: '🇷🇴', tz: 'Europe/Bucharest', city: '布加勒斯特' },
+      { id: 'ru', name: '俄罗斯 (莫斯科)', en: 'Russia (Moscow)', dial: '7', flag: '🇷🇺', tz: 'Europe/Moscow', city: '莫斯科' },
+      { id: 'tr', name: '土耳其', en: 'Turkey', dial: '90', flag: '🇹🇷', tz: 'Europe/Istanbul', city: '伊斯坦布尔' },
+      { id: 'il', name: '以色列', en: 'Israel', dial: '972', flag: '🇮🇱', tz: 'Asia/Jerusalem', city: '特拉维夫' },
+      { id: 'br', name: '巴西 (圣保罗)', en: 'Brazil (Sao Paulo)', dial: '55', flag: '🇧🇷', tz: 'America/Sao_Paulo', city: '圣保罗 / 里约' },
+      { id: 'mx', name: '墨西哥', en: 'Mexico', dial: '52', flag: '🇲🇽', tz: 'America/Mexico_City', city: '墨西哥城' },
+      { id: 'ar', name: '阿根廷', en: 'Argentina', dial: '54', flag: '🇦🇷', tz: 'America/Buenos_Aires', city: '布宜诺斯艾利斯' },
+      { id: 'cl', name: '智利', en: 'Chile', dial: '56', flag: '🇨🇱', tz: 'America/Santiago', city: '圣地亚哥' },
+      { id: 'co', name: '哥伦比亚', en: 'Colombia', dial: '57', flag: '🇨🇴', tz: 'America/Bogota', city: '波哥大' },
+      { id: 'pe', name: '秘鲁', en: 'Peru', dial: '51', flag: '🇵🇪', tz: 'America/Lima', city: '利马' },
+      { id: 'za', name: '南非', en: 'South Africa', dial: '27', flag: '🇿🇦', tz: 'Africa/Johannesburg', city: '约翰内斯堡 / 开普敦' },
+      { id: 'eg', name: '埃及', en: 'Egypt', dial: '20', flag: '🇪🇬', tz: 'Africa/Cairo', city: '开罗' },
+      { id: 'ng', name: '尼日利亚', en: 'Nigeria', dial: '234', flag: '🇳🇬', tz: 'Africa/Lagos', city: '拉各斯' },
+      { id: 'ke', name: '肯尼亚', en: 'Kenya', dial: '254', flag: '🇰🇪', tz: 'Africa/Nairobi', city: '内罗毕' },
+      { id: 'ma', name: '摩洛哥', en: 'Morocco', dial: '212', flag: '🇲🇦', tz: 'Africa/Casablanca', city: '卡萨布兰卡' },
+      { id: 'pk', name: '巴基斯坦', en: 'Pakistan', dial: '92', flag: '🇵🇰', tz: 'Asia/Karachi', city: '卡拉奇 / 伊斯兰堡' },
+      { id: 'bd', name: '孟加拉国', en: 'Bangladesh', dial: '880', flag: '🇧🇩', tz: 'Asia/Dhaka', city: '达卡' }
+    ];
+
+    const DEFAULT_PINNED = ['cn', 'fr', 'us-ny', 'gb', 'ae', 'jp'];
+    let pinnedIds = [];
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      pinnedIds = Array.isArray(stored) && stored.length ? stored : [...DEFAULT_PINNED];
+    } catch {
+      pinnedIds = [...DEFAULT_PINNED];
+    }
+
+    const savePinned = () => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(pinnedIds)); } catch {}
+    };
+
+    function showToast(message) {
+      if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return;
+      let box = document.getElementById('toast-container');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'toast-container';
+        box.className = 'toast-container';
+        box.setAttribute('aria-live', 'polite');
+        document.body.appendChild(box);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      box.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove && toast.remove(), 250);
+      }, 2200);
+    }
+
+    // 计算特定时区的时间与相对时差
+    function getTimeInfo(timeZone) {
+      const now = new Date();
+      try {
+        const dtf = new Intl.DateTimeFormat('zh-CN', {
+          timeZone,
+          year: 'numeric', month: 'numeric', day: 'numeric',
+          weekday: 'short',
+          hour: 'numeric', minute: 'numeric', second: 'numeric',
+          hour12: false
+        });
+        const parts = Object.fromEntries(dtf.formatToParts(now).map(p => [p.type, p.value]));
+        const hour = parseInt(parts.hour, 10);
+        const minute = parseInt(parts.minute, 10);
+        const second = parseInt(parts.second, 10);
+        const timeStr = `${parts.hour.padStart(2, '0')}:${parts.minute.padStart(2, '0')}`;
+        const secStr = `:${parts.second.padStart(2, '0')}`;
+        const dateStr = `${parts.month}月${parts.day}日 ${parts.weekday}`;
+
+        // 计算相对时差 (与本地时区对比)
+        const localMinutes = -now.getTimezoneOffset(); // 本地相对于 UTC 的偏移分钟
+        // 目标时区相对于 UTC 的偏移分钟
+        const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+        const targetDate = new Date(now.toLocaleString('en-US', { timeZone }));
+        const targetMinutes = Math.round((targetDate - utcDate) / 60000);
+        const diffMinutes = targetMinutes - localMinutes;
+        const diffHours = diffMinutes / 60;
+
+        let diffText = '';
+        let diffClass = 'same';
+        if (Math.abs(diffHours) < 0.05) {
+          diffText = '与你同区';
+          diffClass = 'same';
+        } else if (diffHours > 0) {
+          diffText = `比你快 ${Number.isInteger(diffHours) ? diffHours : diffHours.toFixed(1)} 小时`;
+          diffClass = 'ahead';
+        } else {
+          diffText = `比你慢 ${Math.abs(Number.isInteger(diffHours) ? diffHours : diffHours.toFixed(1))} 小时`;
+          diffClass = 'behind';
+        }
+
+        // 适宜联系判断
+        let statusText = '🟢 适宜沟通';
+        let statusClass = 'work';
+        let statusTip = '当地处于正常工作时段 (09:00 - 18:00)';
+        if (hour >= 22 || hour < 7) {
+          statusText = '🟣 深夜休息';
+          statusClass = 'rest';
+          statusTip = '当地处于深夜睡眠时段，建议避免消息打扰';
+        } else if ((hour >= 7 && hour < 9) || (hour >= 18 && hour < 22)) {
+          statusText = '🟡 非工作时段';
+          statusClass = 'evening';
+          statusTip = '当地处于早晚私人时段，可沟通非紧急事项';
+        }
+
+        const dayProgress = ((hour * 60 + minute) / 1440) * 100;
+
+        return {
+          timeStr, secStr, dateStr, hour, minute, second,
+          diffText, diffClass, diffHours,
+          statusText, statusClass, statusTip, dayProgress
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    // 更新本地主时钟卡片
+    function updateLocalClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      if ($('local-time')) $('local-time').textContent = `${h}:${m}`;
+      if ($('local-sec')) $('local-sec').textContent = `:${s}`;
+
+      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      if ($('local-date')) {
+        $('local-date').textContent = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+      }
+
+      const offsetMinutes = -now.getTimezoneOffset();
+      const offsetH = Math.floor(Math.abs(offsetMinutes) / 60);
+      const offsetM = Math.abs(offsetMinutes) % 60;
+      const offsetStr = `UTC${offsetMinutes >= 0 ? '+' : '-'}${offsetH}${offsetM ? `:${offsetM}` : ''}`;
+
+      try {
+        const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || '本地系统时区';
+        if ($('local-tz-name')) $('local-tz-name').textContent = `${userTz} (${offsetStr})`;
+        if ($('local-offset')) $('local-offset').textContent = `基准时区 · 时差对比基准`;
+      } catch {}
+    }
+
+    // 渲染固定看板
+    function renderPinnedGrid() {
+      const grid = $('pinned-grid');
+      if (!grid) return;
+      grid.replaceChildren();
+
+      const pinnedCountries = pinnedIds.map(id => COUNTRIES.find(c => c.id === id)).filter(Boolean);
+      $('pinned-count').textContent = `${pinnedCountries.length} 个国家/地区`;
+
+      if (!pinnedCountries.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.style.gridColumn = '1 / -1';
+        empty.textContent = '暂无固定国家。可以在下方列表中点击“📌 固定”进行添加。';
+        grid.append(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      pinnedCountries.forEach(country => {
+        const info = getTimeInfo(country.tz);
+        if (!info) return;
+
+        const card = document.createElement('div');
+        card.className = 'clock-card';
+
+        card.innerHTML = `
+          <div class="clock-card-top">
+            <div class="country-badge-group">
+              <span class="country-flag">${country.flag}</span>
+              <div class="country-info">
+                <span class="country-name">${country.name}</span>
+                <span class="country-sub">${country.city}</span>
+              </div>
+            </div>
+            <button class="dial-pill" type="button" title="点击复制区号 +${country.dial}" data-dial="${country.dial}">+${country.dial}</button>
+            <button class="card-pin-btn" type="button" title="取消固定" data-unpin="${country.id}" aria-label="取消固定 ${country.name}">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="clock-card-time">
+            <div class="card-time-num">${info.timeStr}<span class="sec">${info.secStr}</span></div>
+            <span class="diff-pill ${info.diffClass}">${info.diffText}</span>
+          </div>
+          <div class="clock-card-meta">
+            <span>${info.dateStr}</span>
+            <span>${country.en}</span>
+          </div>
+          <div class="day-track" title="24小时光带：当地时间 ${info.timeStr}">
+            <span class="day-thumb" style="left: ${info.dayProgress}%;"></span>
+          </div>
+          <div class="contact-status-bar">
+            <span class="status-pill ${info.statusClass}" title="${info.statusTip}">${info.statusText}</span>
+            <a href="whatsapp.html" class="button ghost" style="padding:4px 9px;min-height:30px;font-size:11.5px;" title="使用该国家区号生成 WhatsApp 链接">WhatsApp →</a>
+          </div>
+        `;
+
+        card.querySelector('[data-dial]').addEventListener('click', () => {
+          navigator.clipboard?.writeText('+' + country.dial);
+          showToast(`已复制区号 +${country.dial} (${country.name})`);
+        });
+
+        card.querySelector('[data-unpin]').addEventListener('click', () => {
+          pinnedIds = pinnedIds.filter(x => x !== country.id);
+          savePinned();
+          renderPinnedGrid();
+          renderTable();
+          showToast(`已将 ${country.name} 从看板移除`);
+        });
+
+        fragment.append(card);
+      });
+
+      grid.append(fragment);
+    }
+
+    // 渲染国家列表/搜索结果
+    function renderTable() {
+      const tbody = $('country-table-body');
+      if (!tbody) return;
+      tbody.replaceChildren();
+
+      const query = $('search-input').value.trim().toLowerCase().replace(/^\+/, '');
+      $('search-clear').hidden = !query;
+
+      const filtered = COUNTRIES.filter(c => {
+        if (!query) return true;
+        return c.name.toLowerCase().includes(query) ||
+               c.en.toLowerCase().includes(query) ||
+               c.dial.includes(query) ||
+               c.city.toLowerCase().includes(query);
+      });
+
+      $('list-count').textContent = `匹配 ${filtered.length} 个国家/地区`;
+      $('list-title').textContent = query ? `搜索结果 (${filtered.length})` : '全球主要国家区号与时区';
+
+      if (!filtered.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="6" style="text-align:center;padding:36px;color:var(--muted);">未找到与 “${query}” 匹配的国家或区号，请尝试输入纯数字区号或国家中文名。</td>`;
+        tbody.append(tr);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      filtered.forEach(country => {
+        const info = getTimeInfo(country.tz);
+        const isPinned = pinnedIds.includes(country.id);
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>
+            <span style="font-size:18px;margin-right:7px;vertical-align:middle;">${country.flag}</span>
+            <strong style="color:var(--text);">${country.name}</strong>
+            <span style="color:var(--muted);font-size:12px;margin-left:6px;">${country.city}</span>
+          </td>
+          <td><button class="dial-pill" type="button" data-dial="${country.dial}">+${country.dial}</button></td>
+          <td style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);">${info ? info.timeStr + ' ' + info.dateStr : '--'}</td>
+          <td><span class="diff-pill ${info ? info.diffClass : 'same'}">${info ? info.diffText : '--'}</span></td>
+          <td><span class="status-pill ${info ? info.statusClass : ''}">${info ? info.statusText : '--'}</span></td>
+          <td>
+            <button class="td-pin-btn ${isPinned ? 'pinned' : ''}" type="button" data-toggle-pin="${country.id}">
+              ${isPinned ? '已固定 ✔' : '＋ 固定'}
+            </button>
+          </td>
+        `;
+
+        tr.querySelector('[data-dial]').addEventListener('click', () => {
+          navigator.clipboard?.writeText('+' + country.dial);
+          showToast(`已复制区号 +${country.dial} (${country.name})`);
+        });
+
+        tr.querySelector('[data-toggle-pin]').addEventListener('click', () => {
+          if (pinnedIds.includes(country.id)) {
+            pinnedIds = pinnedIds.filter(x => x !== country.id);
+            showToast(`已从看板移除 ${country.name}`);
+          } else {
+            pinnedIds.push(country.id);
+            showToast(`已将 ${country.name} 固定到看板 ⭐`);
+          }
+          savePinned();
+          renderPinnedGrid();
+          renderTable();
+        });
+
+        fragment.append(tr);
+      });
+
+      tbody.append(fragment);
+    }
+
+    // 事件绑定与快捷搜索
+    $('search-input').addEventListener('input', renderTable);
+    $('search-clear').addEventListener('click', () => {
+      $('search-input').value = '';
+      renderTable();
+      $('search-input').focus();
+    });
+
+    document.querySelectorAll('.quick-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        $('search-input').value = tag.dataset.q;
+        renderTable();
+        $('country-table-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    $('reset-pinned').addEventListener('click', () => {
+      pinnedIds = [...DEFAULT_PINNED];
+      savePinned();
+      renderPinnedGrid();
+      renderTable();
+      showToast('已恢复默认看板配置');
+    });
+
+    // 主题切换绑定
+    const themeBtn = $('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+          (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch {}
+        showToast(next === 'dark' ? '已切换至深色模式 🌙' : '已切换至浅色模式 ☀️');
+      });
+    }
+
+    // 初始化并设置每秒心跳刷新
+    updateLocalClock();
+    renderPinnedGrid();
+    renderTable();
+
+    setInterval(() => {
+      updateLocalClock();
+      // 优化性能：每秒刷新卡片内的时间数字即可
+      const cards = document.querySelectorAll('.clock-card');
+      const pinnedCountries = pinnedIds.map(id => COUNTRIES.find(c => c.id === id)).filter(Boolean);
+      cards.forEach((card, idx) => {
+        const country = pinnedCountries[idx];
+        if (!country) return;
+        const info = getTimeInfo(country.tz);
+        if (!info) return;
+        const timeBox = card.querySelector('.card-time-num');
+        if (timeBox) timeBox.innerHTML = `${info.timeStr}<span class="sec">${info.secStr}</span>`;
+      });
+    }, 1000);
+  </script>
+</body>
+</html>

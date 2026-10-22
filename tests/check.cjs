@@ -95,7 +95,7 @@ assert.equal(full.run('items.length'), 2);
 assert.equal(full.get('storage-status').hidden, false);
 console.log('通过：VCF 解析与导出、WhatsApp 区号与粘贴、待办兼容与存储异常。');
 
-const pages = ['index.html', 'vcf.html', 'whatsapp.html', 'todo.html'];
+const pages = ['index.html', 'vcf.html', 'whatsapp.html', 'todo.html', 'worldtime.html'];
 for (const file of pages) {
   const html = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
   assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, file + ': one main heading');
@@ -107,4 +107,4 @@ for (const file of pages) {
   }
 }
 assert.match(fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), /class="tool-grid"/);
-console.log('通过：首页工具入口、四个页面导航及本地资源路径。');
+console.log('通过：首页工具入口、五个页面导航及本地资源路径。');

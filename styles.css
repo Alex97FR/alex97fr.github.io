@@ -319,7 +319,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--input-focus-bord
 .status.error { color: var(--danger); border-color: #f0d6db; background: rgba(182, 62, 80, 0.08); }
 
 /* Tool Cards 首页网格 */
-.tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
 .tool-card { display: flex; flex-direction: column; min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--text); text-decoration: none; box-shadow: var(--card-shadow); transition: transform .18s, border-color .18s, box-shadow .18s; }
 .tool-card:hover { transform: translateY(-4px); border-color: #beb4e6; box-shadow: 0 14px 32px -4px rgba(36, 32, 60, 0.12); }
 .tool-card-top { display: flex; align-items: center; justify-content: space-between; }
@@ -328,6 +328,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--input-focus-bord
 .purple { background: var(--icon-purple-bg); color: var(--icon-purple-text); }
 .green { background: var(--icon-green-bg); color: var(--icon-green-text); }
 .amber { background: var(--icon-amber-bg); color: var(--icon-amber-text); }
+.blue-theme { background: rgba(99, 81, 199, 0.1); color: var(--blue); }
 .card-arrow { display: grid; color: #a2a9b6; transition: transform .18s, color .18s; }
 .tool-card:hover .card-arrow { transform: translateX(3px); color: var(--blue); }
 .card-arrow svg { width: 18px; height: 18px; }
@@ -405,6 +406,441 @@ html.embedded .site-header, html.embedded .site-footer { display: none; }
 .toast { padding: 11px 20px; border-radius: 999px; background: var(--toast-bg); color: var(--toast-text); font-size: 13.5px; font-weight: 550; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); display: inline-flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(10px) scale(0.96); transition: opacity .2s ease, transform .2s ease; pointer-events: auto; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateY(0) scale(1); }
 
+/* World Time & Clocks */
+.local-clock-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px 28px;
+  background: linear-gradient(135deg, var(--panel) 0%, var(--field) 100%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+}
+.local-clock-card::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 280px; height: 100%;
+  background: radial-gradient(circle at 100% 0%, rgba(99, 81, 199, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.local-clock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: rgba(25, 121, 94, 0.08);
+  border: 1px solid rgba(25, 121, 94, 0.2);
+  color: var(--ok);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.live-pulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 rgba(25, 121, 94, 0.6);
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 rgba(25, 121, 94, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(25, 121, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(25, 121, 94, 0); }
+}
+.local-clock-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+}
+.big-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text);
+}
+.big-clock .sec {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--blue);
+  opacity: .9;
+  min-width: 32px;
+}
+.local-date-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.local-tz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--text);
+}
+
+/* 搜索与过滤栏 */
+.clock-search-section {
+  margin-top: 20px;
+}
+.search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-input-wrap svg {
+  position: absolute;
+  left: 14px;
+  width: 18px; height: 18px;
+  color: var(--muted);
+  pointer-events: none;
+}
+.search-input-wrap input {
+  height: 46px;
+  padding-left: 42px;
+  padding-right: 36px;
+  font-size: 14.5px;
+  border-radius: 11px;
+}
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 24px; height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(120, 120, 140, 0.15);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+.quick-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.quick-tag-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.quick-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--btn-border);
+  border-radius: 7px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.quick-tag:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--btn-hover-bg);
+}
+
+/* 固定看板网格 */
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 32px 0 16px;
+}
+.board-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.clock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 18px;
+}
+
+/* 单张国家时钟卡片 */
+.clock-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--card-shadow);
+  transition: transform .18s, border-color .18s, box-shadow .18s;
+  overflow: hidden;
+}
+.clock-card:hover {
+  transform: translateY(-3px);
+  border-color: #c0b7e8;
+  box-shadow: 0 12px 30px -4px rgba(36, 32, 60, 0.1);
+}
+.clock-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.country-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.country-flag {
+  font-size: 24px;
+  line-height: 1;
+}
+.country-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.country-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.country-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.dial-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--icon-purple-bg);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  cursor: pointer;
+  border: 1px solid rgba(99, 81, 199, 0.15);
+  transition: all .12s;
+}
+.dial-pill:hover {
+  background: var(--blue);
+  color: #fff;
+}
+.card-pin-btn {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.card-pin-btn:hover {
+  color: var(--danger);
+  background: rgba(182, 62, 80, 0.08);
+}
+.card-pin-btn svg { width: 16px; height: 16px; }
+
+/* 卡片时间与相对时差展示 */
+.clock-card-time {
+  margin-top: 14px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.card-time-num {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text);
+}
+.card-time-num .sec {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.diff-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.diff-pill.ahead {
+  background: rgba(99, 81, 199, 0.1);
+  color: var(--blue);
+  border: 1px solid rgba(99, 81, 199, 0.2);
+}
+.diff-pill.behind {
+  background: rgba(41, 131, 103, 0.1);
+  color: var(--ok);
+  border: 1px solid rgba(41, 131, 103, 0.2);
+}
+.diff-pill.same {
+  background: rgba(120, 115, 140, 0.1);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.clock-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* 适宜联系状态徽章 */
+.contact-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-light);
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.status-pill.work {
+  background: rgba(25, 121, 94, 0.1);
+  color: var(--ok);
+}
+.status-pill.rest {
+  background: rgba(182, 62, 80, 0.08);
+  color: var(--danger);
+}
+.status-pill.evening {
+  background: rgba(176, 122, 42, 0.1);
+  color: var(--icon-amber-text);
+}
+
+/* 24 小时拟物昼夜刻度条 */
+.day-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1b2034 0%, #1e2d5a 25%, #f5bb5d 50%, #4a75b5 75%, #1b2034 100%);
+  overflow: visible;
+}
+.day-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 搜索结果列表 / 全部国家区号表 */
+.country-list-section {
+  margin-top: 36px;
+}
+.country-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.country-table th {
+  background: var(--table-head-bg);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--line);
+}
+.country-table td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--line-light);
+  color: var(--text);
+  vertical-align: middle;
+}
+.country-table tr:last-child td { border-bottom: 0; }
+.country-table tr:hover td { background: rgba(99, 81, 199, 0.02); }
+.td-pin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--btn-border);
+  border-radius: 6px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all .15s;
+}
+.td-pin-btn:hover, .td-pin-btn.pinned {
+  background: var(--blue-subtle);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1000px) {
   .header-inner { gap: 24px; }
@@ -418,14 +854,16 @@ html.embedded .site-header, html.embedded .site-footer { display: none; }
   .brand { font-size: 17px; }
   .logo { width: 30px; height: 30px; border-radius: 8px; }
   .theme-toggle { margin-left: auto; width: 34px; height: 34px; }
-  .site-nav { order: 3; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; margin-top: 10px; margin-left: 0; }
-  .nav-item { justify-content: center; height: auto; min-height: 44px; padding: 8px 0; text-align: center; font-size: 12px; white-space: normal; line-height: 1.4; }
+  .site-nav { order: 3; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); width: 100%; gap: 4px; margin-top: 10px; margin-left: 0; }
+  .nav-item { justify-content: center; height: auto; min-height: 42px; padding: 6px 0; text-align: center; font-size: 11.5px; white-space: normal; line-height: 1.3; }
   .tool-grid { grid-template-columns: 1fr; gap: 14px; }
   .tool-card { padding: 22px; }
   .tool-description { margin-bottom: 0; font-size: 14px; }
   .site-footer { margin-top: 28px; padding-block: 24px; }
   .page-header { padding-top: 22px; }
   h1, .home-page h1 { font-size: 28px; }
+  .big-clock { font-size: 36px; }
+  .clock-grid { grid-template-columns: 1fr; }
   .card { padding: 18px; }
   .caption { font-size: 12px; }
   .options { gap: 14px; }
@@ -447,14 +885,16 @@ html.embedded .site-header, html.embedded .site-footer { display: none; }
   .head { display: none; }
   .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px; min-width: 0; gap: 10px; padding: 16px 0; }
   .row .link { grid-column: 1 / -1; padding: 10px; border-radius: 7px; background: var(--field); border: 1px solid var(--line); }
+  .country-table { display: block; overflow-x: auto; }
 }
 @media (max-width: 360px) {
   main, .home-page main, .tool-page main, .header-inner, .site-footer, .tool-page .site-footer { width: calc(100% - 28px); }
-  .site-nav { gap: 4px; }
-  .nav-item { font-size: 11px; }
+  .site-nav { gap: 2px; }
+  .nav-item { font-size: 10.5px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .tool-card, .button, .toast, .link:not(.pending) { transition: none; animation: none; }
-  .tool-card:hover { transform: none; }
+  .tool-card, .button, .toast, .link:not(.pending), .clock-card { transition: none; animation: none; }
+  .tool-card:hover, .clock-card:hover { transform: none; }
+  .live-pulse { animation: none; }
 }
