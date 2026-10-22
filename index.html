@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Everyday Tools 常用工具箱：联系人转 VCF、批量生成 WhatsApp 链接、本地待办清单。免费使用，无需注册，输入内容在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     const savedTheme = localStorage.getItem('theme');
@@ -62,14 +62,15 @@
           </a>
         </div>
       </section>
-
-      <details id="privacy" class="privacy-details">
-        <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg><span>数据与隐私</span><span class="details-plus" aria-hidden="true">＋</span></summary>
-        <div><p>输入内容不上传。联系人和链接数据在刷新或离开页面后清空，请先导出或复制。</p><p>待办仅保存在当前浏览器，不跨设备同步；清理网站数据会删除待办。</p></div>
-      </details>
     </main>
     <footer class="site-footer">
-      <div class="footer-links"><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
+      <div id="privacy" class="footer-privacy">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span><strong>数据与隐私</strong>：所有输入在浏览器本地内存处理，不经过任何服务器。待办仅保存在当前设备，换机前请导出备份。</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
+      </div>
     </footer>
   </div>
   <script>

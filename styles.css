@@ -193,7 +193,36 @@ html[data-theme="light"] .moon-icon { display: block !important; }
 
 main { flex: 1; width: min(1160px, calc(100% - 64px)); min-width: 0; margin: 0 auto; padding: 0 0 20px; }
 .home-page main { width: min(1120px, calc(100% - 64px)); }
-.site-footer { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 20px; width: min(1160px, calc(100% - 64px)); margin: 40px auto 0; padding: 26px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  width: min(1160px, calc(100% - 64px));
+  margin: 48px auto 0;
+  padding: 24px 0 32px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+.footer-privacy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.footer-privacy svg {
+  width: 16px;
+  height: 16px;
+  color: var(--ok);
+  flex-shrink: 0;
+}
+.footer-privacy strong {
+  color: var(--text);
+  font-weight: 600;
+}
 .footer-links { display: flex; gap: 24px; }
 .footer-links a { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); text-decoration: none; }
 .footer-links a:hover { color: var(--blue); }
