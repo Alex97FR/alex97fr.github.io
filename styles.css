@@ -290,6 +290,214 @@ h1 { margin: 0; font-size: 30px; font-weight: 750; letter-spacing: -.035em; line
 .caption, .hint { color: var(--muted); font-size: 12.5px; }
 .hint { margin: 10px 0 0; line-height: 1.6; }
 
+/* Unified Studio Workbench 一体化工作台 */
+.workbench {
+  margin-top: 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 12px 20px;
+  background: var(--field);
+  border-bottom: 1px solid var(--line);
+}
+.wb-toolbar-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+.wb-toolbar-title svg {
+  width: 16px;
+  height: 16px;
+  color: var(--blue);
+}
+.wb-toolbar-fields {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.wb-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.wb-field input {
+  height: 32px;
+  width: 110px;
+  padding: 0 10px;
+  font-size: 13px;
+  border-radius: 7px;
+  background: var(--panel);
+}
+.wb-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+}
+.wb-check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.wb-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 350px;
+}
+.wb-pane {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.wb-left {
+  border-right: 1px solid var(--line);
+}
+.wb-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.wb-badge {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--icon-purple-bg);
+  color: var(--blue);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.wb-pane-title {
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--text);
+}
+.wb-pane-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.wb-editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.wb-editor-wrap textarea {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  padding: 14px;
+  border: 1px solid var(--line-light);
+  border-radius: 8px;
+  background: var(--field);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.8;
+  resize: none;
+}
+
+.wb-preview-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-light);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--field);
+}
+.wb-preview-wrap .preview-head {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background: var(--table-head-bg);
+  font-weight: 650;
+}
+.wb-contacts-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 200px;
+  max-height: 320px;
+  background: var(--panel);
+}
+
+.wb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 14px 20px;
+  background: var(--field);
+  border-top: 1px solid var(--line);
+}
+.wb-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wb-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.hint-inline {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 8px;
+}
+.wb-status {
+  padding: 8px 20px;
+  font-size: 12.5px;
+  border-top: 1px solid var(--status-border);
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  margin: 0;
+}
+.wb-status:empty { display: none; }
+
+@media (max-width: 760px) {
+  .wb-body { grid-template-columns: 1fr; }
+  .wb-left { border-right: 0; border-bottom: 1px solid var(--line); }
+  .wb-footer { flex-direction: column; align-items: stretch; }
+  .wb-footer-left, .wb-footer-right { justify-content: space-between; width: 100%; }
+  .wb-footer-right .button { flex: 1; }
+  .wb-editor-wrap textarea { min-height: 180px; }
+  .hint-inline { display: none; }
+}
+
 /* Options 表单在宽屏下自适应比例，避免输入框被无限拉长 */
 .options { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line-light); }
 .options label { flex: 1 1 130px; min-width: 120px; }
