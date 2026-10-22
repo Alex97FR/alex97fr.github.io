@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -39,28 +39,55 @@
         <h1>WhatsApp 链接</h1>
         <p class="intro">批量生成 wa.me 快捷直达链接，支持从 Excel 直接复制粘贴姓名与号码。</p>
       </header>
-      <section class="card" aria-labelledby="table-heading">
-        <div class="section-head">
-          <h2 id="table-heading">联系人名单</h2>
-          <span class="caption">从姓名列粘贴 Excel 的姓名、号码两列。</span>
+
+      <!-- 一体化 Studio 工作台 -->
+      <div class="workbench">
+        <!-- 顶部功能配置条 -->
+        <div class="wb-toolbar">
+          <div class="wb-toolbar-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>链接规则</span>
+          </div>
+          <div class="wb-toolbar-fields">
+            <label class="wb-field">
+              <span>姓名前缀</span>
+              <input id="name-prefix" placeholder="例如：客户" autocomplete="off">
+            </label>
+            <label class="wb-field">
+              <span>默认区号</span>
+              <input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off">
+            </label>
+            <label class="wb-field">
+              <span>起始编号</span>
+              <input id="start-number" type="number" min="1" step="1" value="1" style="width:65px;">
+            </label>
+          </div>
         </div>
-        <div class="options">
-          <label>姓名前缀<input id="name-prefix" placeholder="例如：客户" autocomplete="off"></label>
-          <label>默认国家区号<input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off"></label>
-          <label>起始编号<input id="start-number" type="number" min="1" step="1" value="1"></label>
+
+        <!-- 表格操作区 -->
+        <div style="padding: 16px 20px;">
+          <div class="table" role="region" aria-label="联系人及 WhatsApp 链接，可横向滚动" tabindex="0" style="margin-top:0;">
+            <div class="head"><span>生成结果</span><span>姓名</span><span>电话号码</span><span></span></div>
+            <div id="rows"></div>
+          </div>
         </div>
-        <div class="table" role="region" aria-label="联系人及 WhatsApp 链接，可横向滚动" tabindex="0">
-          <div class="head"><span>生成结果</span><span>姓名</span><span>电话号码</span><span></span></div>
-          <div id="rows"></div>
+
+        <!-- 状态栏 -->
+        <p id="status" class="status wb-status" role="status" aria-live="polite"></p>
+
+        <!-- 底部贯通式底栏 -->
+        <div class="wb-footer">
+          <div class="wb-footer-left">
+            <button id="add" class="button" type="button">＋ 添加一行</button>
+            <button id="sample" class="button ghost" type="button">填入示例</button>
+            <button id="clear" class="button ghost" type="button">清空表格</button>
+            <span class="hint-inline">可从 Excel 直接复制姓名、号码两列粘贴</span>
+          </div>
+          <div class="wb-footer-right">
+            <button id="copy" class="button primary" type="button" disabled>复制生成结果</button>
+          </div>
         </div>
-        <div class="actions">
-          <button id="copy" class="button primary" type="button" disabled>复制生成结果</button>
-          <button id="add" class="button" type="button">＋ 添加一行</button>
-          <button id="sample" class="button ghost" type="button">填入示例</button>
-          <button id="clear" class="button" type="button">清空表格</button>
-        </div>
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-      </section>
+      </div>
     </main>
     <footer class="site-footer">
       <div class="footer-links"><a href="index.html#privacy">隐私说明</a><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
