@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Everyday Tools 常用工具箱：联系人转 VCF、批量生成 WhatsApp 链接、本地待办清单。免费使用，无需注册，输入内容在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=14">
-  <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
   <script>
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
@@ -19,9 +19,9 @@
   <div class="layout">
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="index.html"><span class="logo"><img src="favicon.svg?v=3" width="34" height="34" alt=""></span>Everyday Tools</a>
+        <a class="brand" href="index.html"><span class="logo"><img src="favicon.svg?v=4" width="34" height="34" alt=""></span>Everyday Tools</a>
         <nav class="site-nav" aria-label="主导航">
-          <a class="nav-item active" href="index.html" aria-current="page">全部工具</a>
+          <a class="nav-item active" href="index.html" aria-current="page">工具</a>
           <a class="nav-item" href="vcf.html">VCF 通讯录</a>
           <a class="nav-item" href="whatsapp.html">WhatsApp</a>
           <a class="nav-item" href="todo.html">待办清单</a>
@@ -31,51 +31,96 @@
           <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
+        <a class="theme-toggle" href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub 仓库" title="GitHub 仓库" style="text-decoration:none;">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
       </div>
     </header>
     <main id="main" tabindex="-1">
       <header class="page-header">
-        <h1>常用工具</h1>
-        <p class="intro">免费使用，纯本地处理，保护隐私安全。</p>
-        <div class="trust-badges">
-          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>本地处理 · 零上传</span>
-          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>纯静态秒开</span>
-          <span class="trust-pill"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>无需登录注册</span>
+        <div class="hero-badge">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>免费使用 · 无需注册 · 隐私优先</span>
         </div>
+        <h1>简单工具，让工作更高效。</h1>
+        <p class="intro">一站式实用工具集。即开即用，轻松完成日常任务。</p>
       </header>
 
       <section id="tools" class="tool-directory" aria-label="全部工具">
+        <div class="section-meta-bar">
+          <h2>探索工具</h2>
+          <span class="section-meta-count">4 个实用工具</span>
+        </div>
         <div class="tool-grid">
+          <!-- 1. VCF -->
           <a class="tool-card" href="vcf.html">
-            <div class="tool-card-top"><span class="tool-icon purple"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <div class="tool-card-top">
+              <span class="tool-icon blue-theme">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+              </span>
+            </div>
             <h2>联系人转 VCF</h2>
-            <p class="tool-description">粘贴姓名和号码，导出手机通讯录。</p>
+            <p class="tool-description">批量转换联系人，快速导入手机</p>
+            <div class="tool-action-link">
+              <span>打开工具</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </div>
           </a>
+
+          <!-- 2. WhatsApp -->
           <a class="tool-card" href="whatsapp.html">
-            <div class="tool-card-top"><span class="tool-icon green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9c1 3 3 5 6 6l2-2-2-1-1 1-2-2 1-1-1-2Z"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <div class="tool-card-top">
+              <span class="tool-icon green">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9c1 3 3 5 6 6l2-2-2-1-1 1-2-2 1-1-1-2Z"/></svg>
+              </span>
+            </div>
             <h2>WhatsApp 链接</h2>
-            <p class="tool-description">批量生成直达链接，支持 Excel 粘贴。</p>
+            <p class="tool-description">批量生成聊天链接，提高效率</p>
+            <div class="tool-action-link">
+              <span>打开工具</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </div>
           </a>
+
+          <!-- 3. Todo -->
           <a class="tool-card" href="todo.html">
-            <div class="tool-card-top"><span class="tool-icon amber"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 12 3 3 7-7"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <div class="tool-card-top">
+              <span class="tool-icon amber">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </span>
+            </div>
             <h2>待办清单</h2>
-            <p class="tool-description">记录待办，自动保存在当前浏览器。</p>
+            <p class="tool-description">整理每日任务，保持专注</p>
+            <div class="tool-action-link">
+              <span>打开工具</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </div>
           </a>
+
+          <!-- 4. World Time -->
           <a class="tool-card" href="worldtime.html">
-            <div class="tool-card-top"><span class="tool-icon blue-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M12 2a14.5 14.5 0 0 0 0 20M12 2a14.5 14.5 0 0 1 0 20M2 12h20"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <div class="tool-card-top">
+              <span class="tool-icon purple">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </span>
+            </div>
             <h2>世界时间</h2>
-            <p class="tool-description">按区号速查当地时间与时差，固定常看国家看板。</p>
+            <p class="tool-description">查看全球时区，跨国沟通更轻松</p>
+            <div class="tool-action-link">
+              <span>打开工具</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </div>
           </a>
         </div>
       </section>
     </main>
     <footer class="site-footer">
       <div id="privacy" class="footer-privacy">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        <span><strong>数据与隐私</strong>：所有输入在浏览器本地内存处理，不经过任何服务器。待办仅保存在当前设备，换机前请导出备份。</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>隐私优先 · 无需账户 · 免费使用 · 本地浏览器处理</span>
       </div>
       <div class="footer-links">
-        <a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
+        <a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">© Everyday Tools <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
       </div>
     </footer>
   </div>
