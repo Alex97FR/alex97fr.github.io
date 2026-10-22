@@ -30,7 +30,7 @@ function load(file, stored = null, failSave = false) {
   return { get, run: source => vm.runInContext(source, context), writes: () => writes };
 }
 
-const vcf = load('index.html');
+const vcf = load('vcf.html');
 assert.equal(vcf.run("parseContacts('客户01 13800000000').found[0].phone"), '13800000000');
 assert.equal(vcf.run("parseContacts('客户01 13800000000').found[0].name"), '客户01');
 assert.equal(vcf.run("parseContacts('张三 (020) 1234-5678').found[0].phone"), '02012345678');
@@ -94,3 +94,17 @@ full.get('add').events.click();
 assert.equal(full.run('items.length'), 2);
 assert.equal(full.get('storage-status').hidden, false);
 console.log('通过：VCF 解析与导出、WhatsApp 区号与粘贴、待办兼容与存储异常。');
+
+const pages = ['index.html', 'vcf.html', 'whatsapp.html', 'todo.html'];
+for (const file of pages) {
+  const html = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, file + ': one main heading');
+  assert.equal((html.match(/aria-current="page"/g) || []).length, 1, file + ': one active navigation entry');
+  assert.match(html, /<title>Everyday Tools<\/title>/);
+  for (const [, href] of html.matchAll(/href="([^"#]+)"/g)) {
+    if (/^https?:/.test(href)) continue;
+    assert.ok(fs.existsSync(path.join(__dirname, '..', href.split(/[?#]/)[0])), file + ': missing ' + href);
+  }
+}
+assert.match(fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), /class="tool-grid"/);
+console.log('通过：首页工具入口、四个页面导航及本地资源路径。');

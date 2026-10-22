@@ -3,187 +3,86 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#202232">
-  <meta name="description" content="免费在线批量生成 VCF 通讯录。联系人在浏览器本地处理，支持中文姓名、国际号码及自定义前后缀。">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Everyday Tools 常用工具箱：联系人转 VCF、批量生成 WhatsApp 链接、本地待办清单。免费使用，无需注册，输入内容在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
 </head>
-<body>
+<body class="home-page">
   <a class="skip-link" href="#main">跳到主要内容</a>
   <div class="layout">
-    <aside aria-label="工具导航">
-      <a class="brand" href="index.html"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>Everyday Tools</a>
-      <div class="nav-title">日常工具 / WORKSPACE</div>
-      <nav aria-label="切换工具">
-        <a class="nav-item active" href="index.html" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg></span>联系人转 VCF</a>
-        <a class="nav-item" href="whatsapp.html"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9c1 3 3 5 6 6l2-2-2-1-1 1-2-2 1-1-1-2Z"/></svg></span>WhatsApp 链接</a>
-        <a class="nav-item" href="todo.html"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 12 3 3 7-7"/></svg></span>待办事项</a>
-      </nav>
-      <div class="sidebar-note"><strong>简单一点，效率多一点。</strong>无需安装 · 打开即用<br>数据在本机浏览器处理</div>
-    </aside>
-    <main id="main" tabindex="-1">
-      <div class="topbar"><span>我的工作台 / 联系人转 VCF</span><span class="privacy-badge">本地处理</span></div>
-      <header class="page-header">
-        <p class="eyebrow">01 / 联系人工具</p>
-        <h1>联系人转 VCF</h1>
-        <p class="subtitle">从一段文本到一份通讯录。粘贴姓名和号码，预览后导入手机。</p>
-      </header>
-      <section class="card" aria-labelledby="settings-heading">
-        <div class="section-head"><h2 id="settings-heading">姓名设置</h2><span class="caption">按需填写，预览实时更新</span></div>
-        <div class="options">
-          <label>姓名前缀<input id="prefix" placeholder="例如：客户" autocomplete="off"></label>
-          <label>姓名后缀<input id="suffix" placeholder="选填" autocomplete="off"></label>
-          <label class="option-check"><input id="phone-suffix" type="checkbox">附加号码后四位</label>
-        </div>
-        <p class="hint">保存的姓名 = 前缀 + 原姓名 + 后缀 + 可选的号码后四位</p>
-      </section>
-      <div class="workspace">
-        <section class="card" aria-labelledby="source-heading">
-          <div class="section-head"><h2 id="source-heading"><span class="step">1</span><label for="source">粘贴联系人</label></h2><span class="caption">每行一位 · 支持表格粘贴</span></div>
-          <textarea id="source" spellcheck="false" aria-describedby="source-hint" placeholder="姓名 + 电话号码，每行一位&#10;&#10;示例联系人甲 +33 6 00 00 00 01&#10;示例联系人乙 +86 138 0000 0000"></textarea>
-          <p class="hint" id="source-hint">姓名在前，号码在后；支持空格、Tab、逗号分隔。</p>
-          <div class="actions">
-            <button id="parse" class="button primary" type="button">解析联系人 <span aria-hidden="true">→</span></button>
-            <button id="clear" class="button" type="button">清空输入</button>
-          </div>
-          <p id="status" class="status" role="status" aria-live="polite">准备就绪，粘贴联系人开始整理。</p>
-        </section>
-        <section class="card" aria-labelledby="preview-heading">
-          <div class="section-head"><h2 id="preview-heading"><span class="step">2</span>预览与导出</h2><span class="caption" id="contact-count">0 位联系人</span></div>
-          <div class="preview" aria-label="联系人预览">
-            <div class="preview-head"><span>保存的姓名</span><span>电话号码</span></div>
-            <div id="contacts"><div class="empty"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg>你的通讯录将在这里显示<br><span class="caption">先在左侧粘贴并解析联系人</span></div></div>
-          </div>
-          <div class="preview-foot"><span class="caption">VCF 3.0 · UTF-8 编码</span><button id="download" class="button primary" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></svg>下载 VCF</button></div>
-          <p class="hint">下载后，在手机通讯录中选择“从文件导入”。</p>
-        </section>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>Everyday Tools</a>
+        <nav class="site-nav" aria-label="主导航">
+          <a class="nav-item active" href="index.html" aria-current="page">全部工具</a>
+          <a class="nav-item" href="vcf.html">VCF 通讯录</a>
+          <a class="nav-item" href="whatsapp.html">WhatsApp</a>
+          <a class="nav-item" href="todo.html">待办清单</a>
+        </nav>
+        <a class="repo-link" href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码，在新标签页打开">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
       </div>
-      <p class="page-foot">Everyday Tools · Simple, useful tools for everyday tasks.</p>
+    </header>
+    <main id="main" tabindex="-1">
+      <section class="hero" aria-labelledby="home-heading">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="small-dot" aria-hidden="true"></span> 轻量实用，为日常准备</p>
+          <h1 id="home-heading">日常工具，<br><span>打开即用。</span></h1>
+          <p class="hero-description">整理联系人、生成 WhatsApp 链接、记录待办。<br>把常用的小工具，放在一个顺手的地方。</p>
+          <div class="hero-actions"><a class="button primary" href="#tools">浏览全部工具 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><span>免费使用 · 无需注册</span></div>
+        </div>
+        <a class="featured-tool" href="vcf.html" aria-label="打开联系人转 VCF 工具">
+          <div class="featured-top"><span class="tag">常用推荐</span><span class="caption">联系人管理</span></div>
+          <div class="format-preview" aria-hidden="true">
+            <div class="text-file"><span class="file-label">联系人文本</span><i></i><i></i><i></i></div>
+            <span class="format-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            <div class="vcf-file"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg><strong>.vcf</strong><span>手机通讯录</span></div>
+          </div>
+          <h2>把一段文本，变成通讯录。</h2>
+          <p>批量解析、自定义姓名，一次整理后直接导出。</p>
+          <div class="featured-bottom"><span>打开联系人转 VCF</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+        </a>
+      </section>
+
+      <section id="tools" class="tool-directory" aria-labelledby="tools-heading">
+        <div class="directory-heading"><div><p class="eyebrow">少一点重复，多一点效率</p><h2 id="tools-heading">选择你需要的工具</h2></div><span class="directory-count">3 个工具</span></div>
+        <div class="tool-grid">
+          <a class="tool-card" href="vcf.html">
+            <div class="tool-card-top"><span class="tool-icon purple"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <p class="tool-category">联系人管理</p><h3>联系人转 VCF</h3>
+            <p class="tool-description">粘贴姓名和号码，批量生成手机通讯录。支持自定义姓名前缀与后缀。</p>
+            <div class="tool-tags"><span>批量处理</span><span>文件导出</span></div>
+          </a>
+          <a class="tool-card" href="whatsapp.html">
+            <div class="tool-card-top"><span class="tool-icon green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9c1 3 3 5 6 6l2-2-2-1-1 1-2-2 1-1-1-2Z"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <p class="tool-category">联系人管理</p><h3>WhatsApp 链接</h3>
+            <p class="tool-description">从号码到直达链接，支持 Excel 批量粘贴、国家区号和一键复制。</p>
+            <div class="tool-tags"><span>表格粘贴</span><span>批量复制</span></div>
+          </a>
+          <a class="tool-card" href="todo.html">
+            <div class="tool-card-top"><span class="tool-icon amber"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 12 3 3 7-7"/></svg></span><span class="card-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div>
+            <p class="tool-category">日常效率</p><h3>待办清单</h3>
+            <p class="tool-description">记录、整理和完成每天的事情。支持搜索、编辑与排序，自动保存在本机。</p>
+            <div class="tool-tags"><span>本地保存</span><span>轻量管理</span></div>
+          </a>
+        </div>
+      </section>
+
+      <section class="principles" aria-label="使用特点">
+        <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg><div><h3>输入内容留在本机</h3><p>联系人与号码在浏览器中处理</p></div></div>
+        <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-12h-7Z"/></svg><div><h3>打开就能开始</h3><p>无需账号，也不用安装软件</p></div></div>
+        <div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M6 20h6m-3-5v5"/><rect x="17" y="8" width="5" height="12" rx="1"/></svg><div><h3>电脑手机都能用</h3><p>适应屏幕，随时处理日常小事</p></div></div>
+      </section>
+      <details id="privacy" class="privacy-details">
+        <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg><span>关于数据与隐私</span><span class="details-plus" aria-hidden="true">＋</span></summary>
+        <div><p>这些工具不会主动上传你输入的联系人、号码或待办。联系人和 WhatsApp 数据只保留在当前页面，刷新或离开前请先导出或复制结果。</p><p>待办保存在当前浏览器的本地存储中，不会跨浏览器或设备同步。清理网站数据会删除待办，请自行备份重要内容。</p><p>网站由 GitHub Pages 托管，源代码公开可查看。</p></div>
+      </details>
     </main>
+    <footer class="site-footer">
+      <div><a class="footer-brand" href="index.html">Everyday Tools</a><p>Simple, useful tools for everyday tasks.</p></div>
+      <div class="footer-links"><a href="index.html#privacy">隐私说明</a><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
+    </footer>
   </div>
-  <script>
-    const $ = id => document.getElementById(id);
-    let contacts = [];
-
-    const now = new Date();
-    $('prefix').value = `${now.getMonth() + 1}/${now.getDate()}`;
-
-    function parseContacts(text) {
-      const found = [], rejected = [];
-      text.split(/\r\n|\r|\n/).forEach((raw, index) => {
-        const line = raw.trim();
-        if (!line) return;
-        const match = line.match(/(?:^|[\s,;:，；：])(\+?[\d(][\d\s().-]{5,}\d)\s*$/);
-        const name = match && line.slice(0, match.index).replace(/[,;:，；：\s-]+$/, "").trim();
-        const phone = match && match[1].replace(/(?!^)\+|[^\d+]/g, "");
-        if (name && phone && phone.replace(/\D/g, "").length >= 7 && phone.replace(/\D/g, "").length <= 15) found.push({ name, phone });
-        else rejected.push(index + 1);
-      });
-      return { found, rejected };
-    }
-
-    function phoneLast4(phone) {
-      return phone.replace(/\D/g, '').slice(-4);
-    }
-
-    function fullName(name, phone) {
-      const last4 = $('phone-suffix').checked ? phoneLast4(phone) : '';
-      return [$('prefix').value.trim(), name, $('suffix').value.trim(), last4].filter(Boolean).join(' ');
-    }
-
-    function render() {
-      const box = $('contacts');
-      $('contact-count').textContent = `${contacts.length} 位联系人`;
-      box.replaceChildren();
-      if (!contacts.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = '没有可保存的联系人';
-        box.append(empty);
-        return;
-      }
-      const fragment = document.createDocumentFragment();
-      contacts.forEach(contact => {
-        const row = document.createElement('div');
-        row.className = 'contact';
-        const name = document.createElement('span');
-        const phone = document.createElement('span');
-        name.textContent = fullName(contact.name, contact.phone);
-        phone.textContent = contact.phone;
-        row.append(name, phone);
-        fragment.append(row);
-      });
-      box.append(fragment);
-    }
-
-    function escapeVcf(value) {
-      return value.replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,');
-    }
-
-    function foldVcfLine(line) {
-      const encoder = new TextEncoder();
-      let folded = '', length = 0;
-      for (const character of line) {
-        const size = encoder.encode(character).length;
-        if (length + size > 75) { folded += '\r\n '; length = 1; }
-        folded += character;
-        length += size;
-      }
-      return folded;
-    }
-
-    function makeVcf() {
-      return contacts.map(contact => {
-        const name = escapeVcf(fullName(contact.name, contact.phone));
-        return ['BEGIN:VCARD', 'VERSION:3.0', `N:${name};;;;`, `FN:${name}`, `TEL;TYPE=CELL,VOICE:${contact.phone}`, 'END:VCARD'].map(foldVcfLine).join('\r\n');
-      }).join('\r\n') + '\r\n';
-    }
-
-    $('parse').addEventListener('click', () => {
-      const result = parseContacts($('source').value);
-      contacts = result.found;
-      render();
-      $('download').disabled = !contacts.length;
-      $('status').className = 'status' + (contacts.length ? '' : ' error');
-      $('status').textContent = contacts.length
-        ? `已解析 ${contacts.length} 位联系人${result.rejected.length ? `，跳过第 ${result.rejected.join('、')} 行` : ''}`
-        : '未识别到联系人，请确认每行末尾是 7–15 位电话号码，并用空格、Tab 或逗号分隔姓名';
-    });
-
-    $('source').addEventListener('input', () => {
-      contacts = [];
-      render();
-      $('download').disabled = true;
-      $('status').className = 'status';
-      $('status').textContent = '输入已更新，点击“解析联系人”刷新预览。';
-    });
-
-    $('clear').addEventListener('click', () => {
-      $('source').value = '';
-      contacts = [];
-      render();
-      $('download').disabled = true;
-      $('status').className = 'status';
-      $('status').textContent = '输入联系人后点击“解析联系人”';
-      $('source').focus();
-    });
-
-    $('download').addEventListener('click', () => {
-      if (!contacts.length) return;
-      const url = URL.createObjectURL(new Blob([makeVcf()], { type: 'text/vcard;charset=utf-8' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `contacts-${new Date().toISOString().slice(0, 10)}.vcf`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
-
-    ['prefix', 'suffix', 'phone-suffix'].forEach(id => $(id).addEventListener('input', render));
-
-    console.assert(parseContacts('示例联系人甲 00000000000\n示例联系人乙 +00 000 000 000').found.length === 2, '联系人解析自检失败');
-    console.assert(phoneLast4('+00 000 123 456') === '3456', '号码后四位自检失败');
-  </script>
 </body>
 </html>

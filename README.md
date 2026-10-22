@@ -8,10 +8,11 @@ Simple, useful tools for everyday tasks.
 
 ## 功能
 
-- `index.html`：批量解析“姓名 + 电话”，预览后下载 VCF 3.0 通讯录；支持姓名前后缀、号码后四位及长中文姓名。
+- `index.html`：工具目录首页，包含三个工具入口、使用特点与隐私说明。
+- `vcf.html`：批量解析“姓名 + 电话”，预览后下载 VCF 3.0 通讯录；支持姓名前后缀、号码后四位及长中文姓名。
 - `whatsapp.html`：批量生成 WhatsApp `wa.me` 链接；支持从 Excel 粘贴姓名和号码、默认国家区号和连续编号，只复制格式有效的号码。
 - `todo.html`：待办清单，支持添加、编辑、搜索、完成筛选和排序，并自动保存到当前浏览器。
-- `styles.css`：三个页面共用的界面样式，支持桌面和手机。
+- `styles.css`：首页和三个工具页共用的界面样式，支持桌面和手机。
 
 ## 使用
 
@@ -19,7 +20,7 @@ Simple, useful tools for everyday tasks.
 
 联系人数据只在当前页面处理，不会上传或持久保存。刷新或切换页面会清空联系人输入，请先下载或复制结果。
 
-待办沿用原有 `wctools.todo.v1` 存储键，已有记录可以继续使用。待办按浏览器和网址存储，不会跨设备同步；换域名、本地文件改为线上网址、隐私模式或清理浏览器数据都可能导致原记录不可见。迁移网址前请自行备份重要事项。
+待办沿用原有 `wctools.todo.v1` 存储键，已有记录可以继续使用。待办按浏览器和网站域名存储，同域名内切换页面或路径不会影响记录；不同浏览器或设备之间不会同步。换域名、本地文件改为线上网址、隐私模式或清理浏览器数据都可能导致原记录不可见。迁移域名前请自行备份重要事项。
 
 VCF 每行使用“姓名 + 分隔符 + 电话”，分隔符可以是空格、Tab、逗号、分号或冒号；电话号码为 7–15 位数字，可带 `+`、空格、括号和连字符。解析失败的行会提示行号。
 
@@ -30,7 +31,7 @@ WhatsApp 号码需要包含国家区号。以 `+` 或 `00` 开头的国际号码
 ## 发布到 GitHub Pages
 
 1. 使用 **Public** 仓库 `Alex97FR/alex97fr.github.io`。仓库名需为小写的 `alex97fr.github.io` 才能使用根网址。GitHub Free 的 Pages 需要公开仓库；网站源码会公开。
-2. 将 `index.html`、`whatsapp.html`、`todo.html`、`styles.css`、`favicon.svg` 和 `.nojekyll` 上传到仓库根目录的 `main` 分支。不要上传真实联系人、生成的 VCF 文件或其他私人数据。
+2. 将 `index.html`、`vcf.html`、`whatsapp.html`、`todo.html`、`styles.css`、`favicon.svg` 和 `.nojekyll` 上传到仓库根目录的 `main` 分支。不要上传真实联系人、生成的 VCF 文件或其他私人数据。
 3. 打开仓库的 **Settings → Pages**，在 **Build and deployment → Source** 选择 **Deploy from a branch**。
 4. 选择 `main` 分支和 `/ (root)` 文件夹，保存。无需构建命令、付费服务器或另外配置 Actions 工作流。
 5. 等 GitHub 显示发布地址 `https://alex97fr.github.io/`。以后更新 `main` 上的网页文件即可自动更新网站。
@@ -49,4 +50,4 @@ WhatsApp 号码需要包含国家区号。以 `+` 或 `00` 开头的国际号码
 node tests/check.cjs
 ```
 
-无需安装测试依赖。检查实际页面脚本中的联系人解析、VCF 转义和折行、WhatsApp 区号与表格粘贴、待办旧数据兼容及存储失败处理。浏览器布局和真实手机通讯录导入仍需单独验证。
+无需安装测试依赖。检查实际页面脚本中的联系人解析、VCF 转义和折行、WhatsApp 区号与表格粘贴、待办旧数据兼容及存储失败处理，以及首页导航和页面资源路径。浏览器布局和真实手机通讯录导入仍需单独验证。

@@ -3,31 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#202232">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="简单的本地待办清单，支持搜索、完成标记、编辑和排序，数据保存在当前浏览器。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
 </head>
-<body>
+<body class="tool-page">
   <a class="skip-link" href="#main">跳到主要内容</a>
   <div class="layout">
-    <aside aria-label="工具导航">
-      <a class="brand" href="index.html"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>Everyday Tools</a>
-      <div class="nav-title">日常工具 / WORKSPACE</div>
-      <nav aria-label="切换工具">
-        <a class="nav-item" href="index.html"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h4M12 12h4"/></svg></span>联系人转 VCF</a>
-        <a class="nav-item" href="whatsapp.html"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9c1 3 3 5 6 6l2-2-2-1-1 1-2-2 1-1-1-2Z"/></svg></span>WhatsApp 链接</a>
-        <a class="nav-item active" href="todo.html" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 12 3 3 7-7"/></svg></span>待办事项</a>
-      </nav>
-      <div class="sidebar-note"><strong>简单一点，效率多一点。</strong>无需安装 · 打开即用<br>数据在本机浏览器处理</div>
-    </aside>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="index.html"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>Everyday Tools</a>
+        <nav class="site-nav" aria-label="主导航">
+          <a class="nav-item" href="index.html">全部工具</a>
+          <a class="nav-item" href="vcf.html">VCF 通讯录</a>
+          <a class="nav-item" href="whatsapp.html">WhatsApp</a>
+          <a class="nav-item active" href="todo.html" aria-current="page">待办清单</a>
+        </nav>
+        <a class="repo-link" href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码，在新标签页打开">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
+      </div>
+    </header>
     <main id="main" tabindex="-1">
-      <div class="topbar"><span>我的工作台 / 待办事项</span><span class="privacy-badge">本地处理</span></div>
+      <div class="topbar"><nav class="breadcrumbs" aria-label="面包屑"><a href="index.html">工具首页</a><span aria-hidden="true">/</span><span>待办事项</span></nav><span class="privacy-badge">本地处理</span></div>
       <header class="page-header">
-        <p class="eyebrow">03 / 日常效率</p>
-        <h1>待办事项</h1>
+        <p class="eyebrow">日常效率</p>
+        <h1>待办清单</h1>
         <p class="subtitle">把事情记下来，一件件完成。回车添加，点击铅笔编辑，拖动手柄排序。</p>
       </header>
       <section class="card" aria-label="待办列表">
@@ -45,16 +47,19 @@
         </div>
         <p id="storage-status" class="status error" role="alert" hidden></p>
         <ul class="list" id="list"></ul>
-        <div class="empty" id="empty" hidden>暂无事项，上面添加一条吧 👆</div>
+        <div class="empty" id="empty" hidden>还没有待办，从上方添加第一件事。</div>
         <div class="foot">
           <span id="summary" role="status" aria-live="polite">已完成 0 / 0</span>
           <button id="clear" class="button ghost" type="button">清除已完成</button>
         </div>
       </section>
-      <p class="hint">待办自动保存在当前浏览器；不同设备和网址之间不会同步。清理浏览器数据会删除待办。</p>
+      <p class="hint">待办自动保存在当前浏览器；不同浏览器、设备或域名之间不会同步。清理浏览器数据会删除待办。</p>
 
-      <p class="page-foot">Everyday Tools · Simple, useful tools for everyday tasks.</p>
     </main>
+    <footer class="site-footer">
+      <div><a class="footer-brand" href="index.html">Everyday Tools</a><p>Simple, useful tools for everyday tasks.</p></div>
+      <div class="footer-links"><a href="index.html#privacy">隐私说明</a><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
+    </footer>
   </div>
   <script>
     const KEY = 'wctools.todo.v1';
@@ -109,7 +114,7 @@
       box.replaceChildren();
       const shown = visible();
       $('empty').hidden = shown.length > 0;
-      $('empty').textContent = items.length ? '没有匹配的事项' : '暂无事项，上面添加一条吧 👆';
+      $('empty').textContent = items.length ? '没有匹配的事项' : '还没有待办，从上方添加第一件事。';
       shown.forEach(item => {
         const li = document.createElement('li');
         li.className = 'item' + (item.done ? ' done' : '');
