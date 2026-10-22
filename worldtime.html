@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
   <meta name="description" content="全球手机区号与世界时差速查：按电话区号或国家查询当地时间、时差对比、工作与休息时段，支持固定常看国家时钟看板。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -74,8 +74,16 @@
         </div>
       </section>
 
+      <!-- 实时搜索卡片结果区 (有输入时立即在正下方呈现) -->
+      <section id="search-results-section" aria-label="搜索结果" hidden>
+        <div class="board-header">
+          <h2><svg viewBox="0 0 24 24" style="width:19px;height:19px;color:var(--blue);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span id="search-results-title">搜索结果</span> <span class="caption" id="search-results-count">匹配 0 个国家</span></h2>
+        </div>
+        <div class="clock-grid" id="search-results-grid"></div>
+      </section>
+
       <!-- 固定看板网格 -->
-      <section aria-label="固定时钟看板">
+      <section id="pinned-section" aria-label="固定时钟看板">
         <div class="board-header">
           <h2><svg viewBox="0 0 24 24" style="width:19px;height:19px;color:var(--blue);"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>固定看板 <span class="caption" id="pinned-count">6 个国家</span></h2>
           <button id="reset-pinned" class="button ghost" type="button">恢复默认看板</button>
@@ -312,6 +320,88 @@
       } catch {}
     }
 
+    // 渲染国家时钟卡片辅助函数
+    function createClockCard(country, isPinnedMode) {
+      const info = getTimeInfo(country.tz);
+      if (!info) return null;
+      const isPinned = pinnedIds.includes(country.id);
+
+      const card = document.createElement('div');
+      card.className = 'clock-card';
+
+      card.innerHTML = `
+        <div class="clock-card-top">
+          <div class="country-badge-group">
+            <span class="country-flag">${country.flag}</span>
+            <div class="country-info">
+              <span class="country-name">${country.name}</span>
+              <span class="country-sub">${country.city}</span>
+            </div>
+          </div>
+          <button class="dial-pill" type="button" title="点击复制区号 +${country.dial}" data-dial="${country.dial}">+${country.dial}</button>
+          ${isPinnedMode ? `
+            <button class="card-pin-btn" type="button" title="从看板移除" data-action="unpin" aria-label="从看板移除 ${country.name}">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          ` : `
+            <button class="td-pin-btn ${isPinned ? 'pinned' : ''}" type="button" data-action="toggle-pin" style="margin-left:auto;">
+              ${isPinned ? '已在看板 ✔' : '＋ 固定'}
+            </button>
+          `}
+        </div>
+        <div class="clock-card-time">
+          <div class="card-time-num">${info.timeStr}<span class="sec">${info.secStr}</span></div>
+          <span class="diff-pill ${info.diffClass}">${info.diffText}</span>
+        </div>
+        <div class="clock-card-meta">
+          <span>${info.dateStr}</span>
+          <span>${country.en}</span>
+        </div>
+        <div class="day-track" title="24小时光带：当地时间 ${info.timeStr}">
+          <span class="day-thumb" style="left: ${info.dayProgress}%;"></span>
+        </div>
+        <div class="contact-status-bar">
+          <span class="status-pill ${info.statusClass}" title="${info.statusTip}">${info.statusText}</span>
+          <a href="whatsapp.html" class="button ghost" style="padding:4px 9px;min-height:30px;font-size:11.5px;" title="使用该国家区号生成 WhatsApp 链接">WhatsApp →</a>
+        </div>
+      `;
+
+      card.querySelector('[data-dial]').addEventListener('click', () => {
+        navigator.clipboard?.writeText('+' + country.dial);
+        showToast(`已复制区号 +${country.dial} (${country.name})`);
+      });
+
+      if (isPinnedMode) {
+        card.querySelector('[data-action="unpin"]').addEventListener('click', () => {
+          pinnedIds = pinnedIds.filter(x => x !== country.id);
+          savePinned();
+          renderPinnedGrid();
+          renderSearchResults();
+          renderTable();
+          showToast(`已将 ${country.name} 从看板移除`);
+        });
+      } else {
+        const toggleBtn = card.querySelector('[data-action="toggle-pin"]');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            if (pinnedIds.includes(country.id)) {
+              pinnedIds = pinnedIds.filter(x => x !== country.id);
+              showToast(`已从看板移除 ${country.name}`);
+            } else {
+              pinnedIds.push(country.id);
+              showToast(`已将 ${country.name} 固定到看板 ⭐`);
+            }
+            savePinned();
+            renderPinnedGrid();
+            renderSearchResults();
+            renderTable();
+          });
+        }
+      }
+
+      return card;
+    }
+
     // 渲染固定看板
     function renderPinnedGrid() {
       const grid = $('pinned-grid');
@@ -325,77 +415,76 @@
         const empty = document.createElement('div');
         empty.className = 'empty';
         empty.style.gridColumn = '1 / -1';
-        empty.textContent = '暂无固定国家。可以在下方列表中点击“📌 固定”进行添加。';
+        empty.textContent = '暂无固定国家。可以在下方搜索或列表中点击“＋ 固定”添加。';
         grid.append(empty);
         return;
       }
 
       const fragment = document.createDocumentFragment();
       pinnedCountries.forEach(country => {
-        const info = getTimeInfo(country.tz);
-        if (!info) return;
-
-        const card = document.createElement('div');
-        card.className = 'clock-card';
-
-        card.innerHTML = `
-          <div class="clock-card-top">
-            <div class="country-badge-group">
-              <span class="country-flag">${country.flag}</span>
-              <div class="country-info">
-                <span class="country-name">${country.name}</span>
-                <span class="country-sub">${country.city}</span>
-              </div>
-            </div>
-            <button class="dial-pill" type="button" title="点击复制区号 +${country.dial}" data-dial="${country.dial}">+${country.dial}</button>
-            <button class="card-pin-btn" type="button" title="取消固定" data-unpin="${country.id}" aria-label="取消固定 ${country.name}">
-              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-            </button>
-          </div>
-          <div class="clock-card-time">
-            <div class="card-time-num">${info.timeStr}<span class="sec">${info.secStr}</span></div>
-            <span class="diff-pill ${info.diffClass}">${info.diffText}</span>
-          </div>
-          <div class="clock-card-meta">
-            <span>${info.dateStr}</span>
-            <span>${country.en}</span>
-          </div>
-          <div class="day-track" title="24小时光带：当地时间 ${info.timeStr}">
-            <span class="day-thumb" style="left: ${info.dayProgress}%;"></span>
-          </div>
-          <div class="contact-status-bar">
-            <span class="status-pill ${info.statusClass}" title="${info.statusTip}">${info.statusText}</span>
-            <a href="whatsapp.html" class="button ghost" style="padding:4px 9px;min-height:30px;font-size:11.5px;" title="使用该国家区号生成 WhatsApp 链接">WhatsApp →</a>
-          </div>
-        `;
-
-        card.querySelector('[data-dial]').addEventListener('click', () => {
-          navigator.clipboard?.writeText('+' + country.dial);
-          showToast(`已复制区号 +${country.dial} (${country.name})`);
-        });
-
-        card.querySelector('[data-unpin]').addEventListener('click', () => {
-          pinnedIds = pinnedIds.filter(x => x !== country.id);
-          savePinned();
-          renderPinnedGrid();
-          renderTable();
-          showToast(`已将 ${country.name} 从看板移除`);
-        });
-
-        fragment.append(card);
+        const card = createClockCard(country, true);
+        if (card) fragment.append(card);
       });
 
       grid.append(fragment);
     }
 
-    // 渲染国家列表/搜索结果
+    // 渲染实时搜索结果卡片区
+    function renderSearchResults() {
+      const section = $('search-results-section');
+      const grid = $('search-results-grid');
+      const input = $('search-input');
+      if (!section || !grid || !input) return;
+
+      const raw = input.value.trim();
+      const query = raw.toLowerCase().replace(/^\+/, '');
+      $('search-clear').hidden = !raw;
+
+      if (!query) {
+        section.hidden = true;
+        grid.replaceChildren();
+        return;
+      }
+
+      section.hidden = false;
+      grid.replaceChildren();
+
+      const matched = COUNTRIES.filter(c => {
+        return c.name.toLowerCase().includes(query) ||
+               c.en.toLowerCase().includes(query) ||
+               c.dial.includes(query) ||
+               c.city.toLowerCase().includes(query);
+      });
+
+      $('search-results-title').textContent = `搜索结果：“${raw}”`;
+      $('search-results-count').textContent = `找到 ${matched.length} 个国家/地区`;
+
+      if (!matched.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.style.gridColumn = '1 / -1';
+        empty.textContent = `未找到与 “${raw}” 匹配的国家或区号，请确认区号数字或国家中文名。`;
+        grid.append(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      matched.forEach(country => {
+        const card = createClockCard(country, false);
+        if (card) fragment.append(card);
+      });
+
+      grid.append(fragment);
+    }
+
+    // 渲染国家表格
     function renderTable() {
       const tbody = $('country-table-body');
       if (!tbody) return;
       tbody.replaceChildren();
 
-      const query = $('search-input').value.trim().toLowerCase().replace(/^\+/, '');
-      $('search-clear').hidden = !query;
+      const raw = $('search-input').value.trim();
+      const query = raw.toLowerCase().replace(/^\+/, '');
 
       const filtered = COUNTRIES.filter(c => {
         if (!query) return true;
@@ -406,11 +495,11 @@
       });
 
       $('list-count').textContent = `匹配 ${filtered.length} 个国家/地区`;
-      $('list-title').textContent = query ? `搜索结果 (${filtered.length})` : '全球主要国家区号与时区';
+      $('list-title').textContent = query ? `速查表过滤 (${filtered.length})` : '全球主要国家区号与时区速查';
 
       if (!filtered.length) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="6" style="text-align:center;padding:36px;color:var(--muted);">未找到与 “${query}” 匹配的国家或区号，请尝试输入纯数字区号或国家中文名。</td>`;
+        tr.innerHTML = `<td colspan="6" style="text-align:center;padding:36px;color:var(--muted);">未找到与 “${raw}” 匹配的记录。</td>`;
         tbody.append(tr);
         return;
       }
@@ -433,7 +522,7 @@
           <td><span class="status-pill ${info ? info.statusClass : ''}">${info ? info.statusText : '--'}</span></td>
           <td>
             <button class="td-pin-btn ${isPinned ? 'pinned' : ''}" type="button" data-toggle-pin="${country.id}">
-              ${isPinned ? '已固定 ✔' : '＋ 固定'}
+              ${isPinned ? '已在看板 ✔' : '＋ 固定'}
             </button>
           </td>
         `;
@@ -453,6 +542,7 @@
           }
           savePinned();
           renderPinnedGrid();
+          renderSearchResults();
           renderTable();
         });
 
@@ -463,9 +553,14 @@
     }
 
     // 事件绑定与快捷搜索
-    $('search-input').addEventListener('input', renderTable);
+    $('search-input').addEventListener('input', () => {
+      renderSearchResults();
+      renderTable();
+    });
+
     $('search-clear').addEventListener('click', () => {
       $('search-input').value = '';
+      renderSearchResults();
       renderTable();
       $('search-input').focus();
     });
@@ -473,8 +568,9 @@
     document.querySelectorAll('.quick-tag').forEach(tag => {
       tag.addEventListener('click', () => {
         $('search-input').value = tag.dataset.q;
+        renderSearchResults();
         renderTable();
-        $('country-table-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('search-results-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     });
 
@@ -482,6 +578,7 @@
       pinnedIds = [...DEFAULT_PINNED];
       savePinned();
       renderPinnedGrid();
+      renderSearchResults();
       renderTable();
       showToast('已恢复默认看板配置');
     });
@@ -502,15 +599,16 @@
     // 初始化并设置每秒心跳刷新
     updateLocalClock();
     renderPinnedGrid();
+    renderSearchResults();
     renderTable();
 
     setInterval(() => {
       updateLocalClock();
-      // 优化性能：每秒刷新卡片内的时间数字即可
-      const cards = document.querySelectorAll('.clock-card');
-      const pinnedCountries = pinnedIds.map(id => COUNTRIES.find(c => c.id === id)).filter(Boolean);
-      cards.forEach((card, idx) => {
-        const country = pinnedCountries[idx];
+      document.querySelectorAll('.clock-card').forEach(card => {
+        const dialBtn = card.querySelector('[data-dial]');
+        if (!dialBtn) return;
+        const dial = dialBtn.dataset.dial;
+        const country = COUNTRIES.find(c => c.dial === dial);
         if (!country) return;
         const info = getTimeInfo(country.tz);
         if (!info) return;
