@@ -8,7 +8,7 @@ Simple, useful tools for everyday tasks.
 
 ## 功能
 
-- `index.html`：工具目录首页，包含三个工具入口、使用特点与隐私说明。
+- `index.html`：工具目录首页，包含三个工具入口与隐私说明。
 - `vcf.html`：批量解析“姓名 + 电话”，预览后下载 VCF 3.0 通讯录；支持姓名前后缀、号码后四位及长中文姓名。
 - `whatsapp.html`：批量生成 WhatsApp `wa.me` 链接；支持从 Excel 粘贴姓名和号码、默认国家区号和连续编号，只复制格式有效的号码。
 - `todo.html`：待办清单，支持添加、编辑、搜索、完成筛选和排序，并自动保存到当前浏览器。

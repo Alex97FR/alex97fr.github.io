@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
 </head>
@@ -19,32 +19,28 @@
         <nav class="site-nav" aria-label="主导航">
           <a class="nav-item" href="index.html">全部工具</a>
           <a class="nav-item" href="vcf.html">VCF 通讯录</a>
-          <a class="nav-item active" href="whatsapp.html" aria-current="page">WhatsApp 链接</a>
+          <a class="nav-item active" href="whatsapp.html" aria-current="page">WhatsApp</a>
           <a class="nav-item" href="todo.html">待办清单</a>
         </nav>
-        <a class="repo-link" href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码，在新标签页打开">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
       </div>
     </header>
     <main id="main" tabindex="-1">
-      <div class="topbar"><nav class="breadcrumbs" aria-label="面包屑"><a href="index.html">工具首页</a><span aria-hidden="true">/</span><span>WhatsApp 链接</span></nav><span class="privacy-badge">本地处理</span></div>
       <header class="page-header">
-        <p class="eyebrow">联系人管理</p>
         <h1>WhatsApp 链接</h1>
-        <p class="subtitle">填写号码，批量生成直达链接。也可以从 Excel 一次粘贴多行。</p>
       </header>
       <section class="card" aria-labelledby="settings-heading">
-        <div class="section-head"><h2 id="settings-heading">生成设置</h2><span class="caption">自动更新 · 仅复制有效号码</span></div>
+        <div class="section-head"><h2 id="settings-heading">设置</h2></div>
         <div class="options">
-          <label>姓名前缀<input id="name-prefix" placeholder="选填，例如：客户" autocomplete="off"></label>
+          <label>姓名前缀<input id="name-prefix" placeholder="例如：客户" autocomplete="off"></label>
           <label>默认国家区号<input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off"></label>
           <label>起始编号<input id="start-number" type="number" min="1" step="1" value="1"></label>
         </div>
-        <p class="hint">已带 + 或 00 的国际号码会保留自身区号。普通号码按默认区号补全，请去掉本地区号前的 0。</p>
+        <p class="hint">+ / 00 开头的号码保留区号；本地号码需填写区号，并去掉开头的 0。</p>
       </section>
       <section class="card" aria-labelledby="table-heading">
-        <div class="section-head"><h2 id="table-heading">联系人表格</h2><span class="caption">从姓名列粘贴：姓名 [Tab] 号码</span></div>
+        <div class="section-head"><h2 id="table-heading">联系人</h2><span class="caption">从姓名列粘贴 Excel 的姓名、号码两列。</span></div>
         <div class="table" role="region" aria-label="联系人及 WhatsApp 链接，可横向滚动" tabindex="0">
-          <div class="head"><span>A / 生成结果</span><span>B / 姓名</span><span>C / 电话号码</span><span></span></div>
+          <div class="head"><span>生成结果</span><span>姓名</span><span>电话号码</span><span></span></div>
           <div id="rows"></div>
         </div>
         <div class="actions">
@@ -52,11 +48,10 @@
           <button id="add" class="button" type="button">＋ 添加一行</button>
           <button id="clear" class="button" type="button">清空表格</button>
         </div>
-        <p id="status" class="status" role="status" aria-live="polite">填写带国家区号的号码，或先设置默认国家区号。</p>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
       </section>
     </main>
     <footer class="site-footer">
-      <div><a class="footer-brand" href="index.html">Everyday Tools</a><p>Simple, useful tools for everyday tasks.</p></div>
       <div class="footer-links"><a href="index.html#privacy">隐私说明</a><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
     </footer>
   </div>
@@ -146,7 +141,7 @@
           const count = pasteIntoRows(text, index, column);
           render();
           $('status').className = 'status';
-          $('status').textContent = '已粘贴 ' + count + ' 行。请确认区号和生成结果。';
+          $('status').textContent = '已粘贴 ' + count + ' 行。';
           $('rows').children[index]?.querySelector(columnIndex ? 'input[type="tel"]' : 'input').focus();
         }));
         remove.addEventListener('click', () => {
@@ -193,7 +188,7 @@
       $('status').className = 'status' + (copied ? '' : ' error');
       $('status').textContent = copied
         ? '已复制 ' + valid.length + ' 条结果' + (skipped ? '，跳过 ' + skipped + ' 行无效号码' : '') + '。'
-        : '浏览器未允许复制。请选中 A 列结果手动复制，或在 HTTPS 网站中重试。';
+        : '浏览器未允许复制，请手动选中结果复制，或在 HTTPS 网站中重试。';
     });
     render();
   </script>

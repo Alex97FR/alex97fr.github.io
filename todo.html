@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="简单的本地待办清单，支持搜索、完成标记、编辑和排序，数据保存在当前浏览器。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
 </head>
@@ -22,19 +22,15 @@
           <a class="nav-item" href="whatsapp.html">WhatsApp</a>
           <a class="nav-item active" href="todo.html" aria-current="page">待办清单</a>
         </nav>
-        <a class="repo-link" href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码，在新标签页打开">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a>
       </div>
     </header>
     <main id="main" tabindex="-1">
-      <div class="topbar"><nav class="breadcrumbs" aria-label="面包屑"><a href="index.html">工具首页</a><span aria-hidden="true">/</span><span>待办事项</span></nav><span class="privacy-badge">本地处理</span></div>
       <header class="page-header">
-        <p class="eyebrow">日常效率</p>
         <h1>待办清单</h1>
-        <p class="subtitle">把事情记下来，一件件完成。回车添加，点击铅笔编辑，拖动手柄排序。</p>
       </header>
       <section class="card" aria-label="待办列表">
         <div class="add-row">
-          <input id="new" aria-label="新待办事项" placeholder="输入待办事项，回车添加…" autocomplete="off" maxlength="200">
+          <input id="new" aria-label="新待办事项" placeholder="输入待办，回车添加" autocomplete="off" maxlength="200">
           <button id="add" class="button primary" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>添加</button>
         </div>
         <div class="toolbar">
@@ -43,21 +39,20 @@
             <button class="tab" aria-pressed="false" data-f="todo" type="button">进行中 <span class="n" id="n-todo">0</span></button>
             <button class="tab" aria-pressed="false" data-f="done" type="button">已完成 <span class="n" id="n-done">0</span></button>
           </div>
-          <input id="search" class="search" aria-label="搜索待办事项" placeholder="搜索待办…" autocomplete="off">
+          <input id="search" class="search" aria-label="搜索待办事项" placeholder="搜索待办" autocomplete="off">
         </div>
         <p id="storage-status" class="status error" role="alert" hidden></p>
         <ul class="list" id="list"></ul>
-        <div class="empty" id="empty" hidden>还没有待办，从上方添加第一件事。</div>
+        <div class="empty" id="empty" hidden>暂无待办</div>
         <div class="foot">
           <span id="summary" role="status" aria-live="polite">已完成 0 / 0</span>
           <button id="clear" class="button ghost" type="button">清除已完成</button>
         </div>
       </section>
-      <p class="hint">待办自动保存在当前浏览器；不同浏览器、设备或域名之间不会同步。清理浏览器数据会删除待办。</p>
+      <p class="hint">仅保存在当前浏览器，清理网站数据会删除待办。</p>
 
     </main>
     <footer class="site-footer">
-      <div><a class="footer-brand" href="index.html">Everyday Tools</a><p>Simple, useful tools for everyday tasks.</p></div>
       <div class="footer-links"><a href="index.html#privacy">隐私说明</a><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
     </footer>
   </div>
@@ -114,7 +109,7 @@
       box.replaceChildren();
       const shown = visible();
       $('empty').hidden = shown.length > 0;
-      $('empty').textContent = items.length ? '没有匹配的事项' : '还没有待办，从上方添加第一件事。';
+      $('empty').textContent = items.length ? '没有匹配的事项' : '暂无待办';
       shown.forEach(item => {
         const li = document.createElement('li');
         li.className = 'item' + (item.done ? ' done' : '');
