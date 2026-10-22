@@ -692,7 +692,11 @@
 
       if (!filtered.length) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="6" style="text-align:center;padding:36px;color:var(--muted);">未找到与 “${raw}” 匹配的记录。</td>`;
+        const td = document.createElement('td');
+        td.colSpan = 6;
+        td.style.cssText = 'text-align:center;padding:36px;color:var(--muted);';
+        td.textContent = `未找到与 “${raw}” 匹配的记录。`;
+        tr.append(td);
         tbody.append(tr);
         return;
       }
