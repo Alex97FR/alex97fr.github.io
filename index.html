@@ -7,8 +7,12 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Everyday Tools 常用工具箱：联系人转 VCF、批量生成 WhatsApp 链接、本地待办清单。免费使用，无需注册，输入内容在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body class="home-page">
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -22,6 +26,10 @@
           <a class="nav-item" href="whatsapp.html">WhatsApp</a>
           <a class="nav-item" href="todo.html">待办清单</a>
         </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换浅色/深色模式" title="切换浅色/深色模式">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
       </div>
     </header>
     <main id="main" tabindex="-1">
@@ -64,5 +72,17 @@
       <div class="footer-links"><a href="https://github.com/Alex97FR/alex97fr.github.io" target="_blank" rel="noopener noreferrer">开源代码 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5H5v14h14v-3M13 5h6v6M19 5l-9 9"/></svg></a></div>
     </footer>
   </div>
+  <script>
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+          (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch {}
+      });
+    }
+  </script>
 </body>
 </html>

@@ -7,9 +7,13 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="免费在线批量生成 VCF 通讯录。联系人在浏览器本地处理，支持中文姓名、国际号码及自定义前后缀。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
-  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('embedded');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body class="tool-page">
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -23,11 +27,16 @@
           <a class="nav-item" href="whatsapp.html">WhatsApp</a>
           <a class="nav-item" href="todo.html">待办清单</a>
         </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换浅色/深色模式" title="切换浅色/深色模式">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
       </div>
     </header>
     <main id="main" tabindex="-1">
       <header class="page-header">
         <h1>联系人转 VCF</h1>
+        <p class="intro">批量解析“姓名 + 电话”，一键导出手机通用的标准 VCF 3.0 通讯录文件。</p>
       </header>
       <section class="card" aria-labelledby="settings-heading">
         <div class="section-head"><h2 id="settings-heading">姓名设置</h2></div>
@@ -44,6 +53,7 @@
           <p class="hint" id="source-hint">每行一位，姓名与号码用空格、Tab 或逗号分隔。</p>
           <div class="actions">
             <button id="parse" class="button primary" type="button">解析联系人 <span aria-hidden="true">→</span></button>
+            <button id="sample" class="button ghost" type="button">填入示例</button>
             <button id="clear" class="button" type="button">清空输入</button>
           </div>
           <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -204,6 +214,30 @@
     });
 
     ['prefix', 'suffix', 'phone-suffix'].forEach(id => $(id).addEventListener('input', render));
+
+    $('sample').addEventListener('click', () => {
+      $('source').value = 'Alexandre +33 6 12 34 56 78\n王总 13800000000\nSophie Martin +33 6 98 76 54 32';
+      $('phone-suffix').checked = true;
+      const result = parseContacts($('source').value);
+      contacts = result.found;
+      render();
+      $('download').disabled = false;
+      $('status').className = 'status';
+      $('status').textContent = '已填入并解析 3 位示例联系人。';
+      showToast('已填入示例数据');
+    });
+
+    const themeBtn = $('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+          (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch {}
+        showToast(next === 'dark' ? '已切换至深色模式 🌙' : '已切换至浅色模式 ☀️');
+      });
+    }
 
     console.assert(parseContacts('示例联系人甲 00000000000\n示例联系人乙 +00 000 000 000').found.length === 2, '联系人解析自检失败');
     console.assert(phoneLast4('+00 000 123 456') === '3456', '号码后四位自检失败');

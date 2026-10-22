@@ -7,9 +7,13 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
-  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add('embedded');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body class="tool-page">
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -23,11 +27,16 @@
           <a class="nav-item active" href="whatsapp.html" aria-current="page">WhatsApp</a>
           <a class="nav-item" href="todo.html">待办清单</a>
         </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换浅色/深色模式" title="切换浅色/深色模式">
+          <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
       </div>
     </header>
     <main id="main" tabindex="-1">
       <header class="page-header">
         <h1>WhatsApp 链接</h1>
+        <p class="intro">批量生成 wa.me 快捷直达链接，支持从 Excel 直接复制粘贴姓名与号码。</p>
       </header>
       <section class="card" aria-labelledby="settings-heading">
         <div class="section-head"><h2 id="settings-heading">设置</h2></div>
@@ -47,6 +56,7 @@
         <div class="actions">
           <button id="copy" class="button primary" type="button" disabled>复制生成结果</button>
           <button id="add" class="button" type="button">＋ 添加一行</button>
+          <button id="sample" class="button ghost" type="button">填入示例</button>
           <button id="clear" class="button" type="button">清空表格</button>
         </div>
         <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -213,6 +223,34 @@
         : '浏览器未允许复制，请手动选中结果复制，或在 HTTPS 网站中重试。';
       if (copied) showToast(`已复制 ${valid.length} 条 WhatsApp 链接`);
     });
+
+    $('sample').addEventListener('click', () => {
+      $('name-prefix').value = 'VIP客户';
+      $('phone-prefix').value = '33';
+      $('start-number').value = '1';
+      rows = [
+        { name: 'Alexandre', phone: '+33 6 12 34 56 78' },
+        { name: '王经理', phone: '+86 138 0000 0000' },
+        { name: 'Sophie Martin', phone: '06 98 76 54 32' }
+      ];
+      render();
+      $('status').className = 'status';
+      $('status').textContent = '已填入 3 条示例联系人。';
+      showToast('已填入示例数据');
+    });
+
+    const themeBtn = $('theme-toggle');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+          (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch {}
+        showToast(next === 'dark' ? '已切换至深色模式 🌙' : '已切换至浅色模式 ☀️');
+      });
+    }
+
     render();
   </script>
 </body>
