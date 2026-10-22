@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -39,17 +39,16 @@
         <h1>WhatsApp 链接</h1>
         <p class="intro">批量生成 wa.me 快捷直达链接，支持从 Excel 直接复制粘贴姓名与号码。</p>
       </header>
-      <section class="card" aria-labelledby="settings-heading">
-        <div class="section-head"><h2 id="settings-heading">设置</h2></div>
+      <section class="card" aria-labelledby="table-heading">
+        <div class="section-head">
+          <h2 id="table-heading">联系人名单</h2>
+          <span class="caption">从姓名列粘贴 Excel 的姓名、号码两列。</span>
+        </div>
         <div class="options">
           <label>姓名前缀<input id="name-prefix" placeholder="例如：客户" autocomplete="off"></label>
           <label>默认国家区号<input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off"></label>
           <label>起始编号<input id="start-number" type="number" min="1" step="1" value="1"></label>
         </div>
-        <p class="hint">+ / 00 开头的号码保留区号；本地号码需填写区号，并去掉开头的 0。</p>
-      </section>
-      <section class="card" aria-labelledby="table-heading">
-        <div class="section-head"><h2 id="table-heading">联系人</h2><span class="caption">从姓名列粘贴 Excel 的姓名、号码两列。</span></div>
         <div class="table" role="region" aria-label="联系人及 WhatsApp 链接，可横向滚动" tabindex="0">
           <div class="head"><span>生成结果</span><span>姓名</span><span>电话号码</span><span></span></div>
           <div id="rows"></div>

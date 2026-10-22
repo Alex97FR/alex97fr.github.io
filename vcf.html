@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="免费在线批量生成 VCF 通讯录。联系人在浏览器本地处理，支持中文姓名、国际号码及自定义前后缀。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
   <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -39,17 +39,16 @@
         <h1>联系人转 VCF</h1>
         <p class="intro">批量解析“姓名 + 电话”，一键导出手机通用的标准 VCF 3.0 通讯录文件。</p>
       </header>
-      <section class="card" aria-labelledby="settings-heading">
-        <div class="section-head"><h2 id="settings-heading">姓名设置</h2></div>
-        <div class="options">
-          <label>姓名前缀<input id="prefix" placeholder="例如：客户" autocomplete="off"></label>
-          <label>姓名后缀<input id="suffix" placeholder="选填" autocomplete="off"></label>
-          <label class="option-check"><input id="phone-suffix" type="checkbox">附加号码后四位</label>
-        </div>
-      </section>
       <div class="workspace">
         <section class="card" aria-labelledby="source-heading">
-          <div class="section-head"><h2 id="source-heading"><span class="step">1</span><label for="source">联系人</label></h2></div>
+          <div class="section-head">
+            <h2 id="source-heading"><span class="step">1</span><label for="source">联系人与设置</label></h2>
+          </div>
+          <div class="options">
+            <label>姓名前缀<input id="prefix" placeholder="例如：客户" autocomplete="off"></label>
+            <label>姓名后缀<input id="suffix" placeholder="选填" autocomplete="off"></label>
+            <label class="option-check"><input id="phone-suffix" type="checkbox">附加号码后四位</label>
+          </div>
           <textarea id="source" spellcheck="false" aria-describedby="source-hint" placeholder="示例联系人甲 +33 6 00 00 00 01&#10;示例联系人乙 +86 138 0000 0000"></textarea>
           <p class="hint" id="source-hint">每行一位，姓名与号码用空格、Tab 或逗号分隔。</p>
           <div class="actions">
