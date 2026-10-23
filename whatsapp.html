@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="批量生成 WhatsApp 直达链接，支持 Excel 表格粘贴、国家区号和自定义编号，全程在浏览器本地处理。">
   <title>Everyday Tools</title>
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
   <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
   <script>
     if (window.self !== window.top) document.documentElement.classList.add('embedded');
@@ -49,27 +49,34 @@
       <!-- 一体化 Studio 工作台 -->
       <div class="workbench">
         <!-- 顶部功能配置条 -->
-        <div class="wb-toolbar">
-          <div class="wb-toolbar-title">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span>链接规则</span>
+        <div class="wb-toolbar wb-toolbar-multiline">
+          <div class="wb-toolbar-main">
+            <div class="wb-toolbar-title">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>链接规则</span>
+            </div>
+            <div class="wb-toolbar-fields">
+              <label class="wb-field">
+                <span>姓名前缀</span>
+                <input id="name-prefix" placeholder="例如：客户" autocomplete="off">
+              </label>
+              <label class="wb-field">
+                <span>默认区号</span>
+                <input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off">
+              </label>
+              <label class="wb-field">
+                <span>起始编号</span>
+                <input id="start-number" type="number" min="1" step="1" value="1" style="width:65px;">
+              </label>
+            </div>
           </div>
-          <div class="wb-toolbar-fields">
-            <label class="wb-field">
-              <span>姓名前缀</span>
-              <input id="name-prefix" placeholder="例如：客户" autocomplete="off">
-            </label>
-            <label class="wb-field">
-              <span>默认区号</span>
-              <input id="phone-prefix" placeholder="例如：33 或 86" inputmode="tel" autocomplete="off">
-            </label>
-            <label class="wb-field">
-              <span>起始编号</span>
-              <input id="start-number" type="number" min="1" step="1" value="1" style="width:65px;">
-            </label>
-            <label class="wb-field" style="flex:1 1 180px;">
-              <span>预设消息</span>
-              <input id="message-template" placeholder="选填，如：您好！" autocomplete="off" style="width:100%;min-width:140px;">
+          <div class="wb-toolbar-sub">
+            <label class="wb-field-full">
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--blue);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                预设消息
+              </span>
+              <input id="message-template" placeholder="选填，例如：您好，这是报价单请查收（留空则生成纯直达链接）" autocomplete="off">
             </label>
           </div>
         </div>
