@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
   <meta name="description" content="简单的本地待办清单，支持搜索、完成标记、编辑和排序，数据保存在当前浏览器。">
@@ -319,31 +322,45 @@
         showToast('本地存储受限，无法导入');
         return;
       }
-      const file = event.target?.files?.[0];
-      if (!file || typeof FileReader === 'undefined') return;
-      const reader = new FileReader();
-      reader.onload = e => {
+      const selectedFile = event.target?.files?.[0];
+      if (!selectedFile || typeof FileReader === 'undefined') return;
+      // Reject files larger than 2MB to prevent browser memory exhaustion
+      if (selectedFile.size > 2 * 1024 * 1024) {
+        showToast('导入失败：文件大小不能超过 2MB');
+        event.target.value = '';
+        return;
+      }
+      const fileReader = new FileReader();
+      fileReader.onload = fileEvent => {
         try {
-          const imported = JSON.parse(e.target.result);
-          if (!Array.isArray(imported)) throw new Error('Format error');
-          const valid = imported.filter(item => item && typeof item.text === 'string');
-          if (!valid.length) throw new Error('Empty');
-          let added = 0;
-          const existingIds = new Set(items.map(i => i.id));
-          valid.forEach(v => {
-            const id = (v.id && !existingIds.has(v.id)) ? v.id : Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-            items.push({ id, text: v.text.trim(), done: !!v.done });
-            existingIds.add(id);
-            added++;
+          const parsedPayload = JSON.parse(fileEvent.target.result);
+          if (!Array.isArray(parsedPayload)) throw new Error('Format error');
+          // Filter valid text items and cap max imports to 500 to avoid quota overrun
+          const maxAllowedImports = 500;
+          const sanitizedCandidates = parsedPayload
+            .filter(item => item && typeof item.text === 'string' && item.text.trim())
+            .slice(0, maxAllowedImports);
+          if (!sanitizedCandidates.length) throw new Error('Empty');
+          let importedItemCount = 0;
+          const existingItemIds = new Set(items.map(todoItem => todoItem.id));
+          sanitizedCandidates.forEach(candidate => {
+            const hasValidStringId = typeof candidate.id === 'string' && candidate.id.trim() && !existingItemIds.has(candidate.id.trim());
+            const uniqueTodoId = hasValidStringId
+              ? candidate.id.trim().slice(0, 64)
+              : Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+            const sanitizedText = candidate.text.trim().slice(0, 200);
+            items.push({ id: uniqueTodoId, text: sanitizedText, done: Boolean(candidate.done) });
+            existingItemIds.add(uniqueTodoId);
+            importedItemCount++;
           });
           save();
           render();
-          showToast(`已成功导入 ${added} 条事项`);
+          showToast(`已成功导入 ${importedItemCount} 条事项`);
         } catch {
           showToast('导入失败：文件格式不符合待办 JSON 规范');
         }
       };
-      reader.readAsText(file);
+      fileReader.readAsText(selectedFile);
       event.target.value = '';
     });
 

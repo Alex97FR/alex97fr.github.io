@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
   <meta name="description" content="全球手机区号与世界时差速查：按电话区号或国家查询当地时间、时差对比、工作与休息时段，支持固定常看国家时钟看板。">
@@ -353,8 +356,13 @@
     let pinnedIds = [];
 
     try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      pinnedIds = Array.isArray(stored) && stored.length ? stored : [...DEFAULT_PINNED];
+      const storedPayload = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      // Validate that each stored ID is a string and belongs to known countries
+      const maxPinnedClocks = 50;
+      pinnedIds = Array.isArray(storedPayload)
+        ? storedPayload.filter(candidateId => typeof candidateId === 'string' && COUNTRIES.some(countryItem => countryItem.id === candidateId)).slice(0, maxPinnedClocks)
+        : [...DEFAULT_PINNED];
+      if (!pinnedIds.length) pinnedIds = [...DEFAULT_PINNED];
     } catch {
       pinnedIds = [...DEFAULT_PINNED];
     }
@@ -488,6 +496,7 @@
 
       const card = document.createElement('div');
       card.className = 'clock-card';
+      card.dataset.id = country.id;
 
       card.innerHTML = `
         <div class="clock-card-top">
@@ -801,16 +810,15 @@
 
     setInterval(() => {
       updateLocalClock();
-      document.querySelectorAll('.clock-card').forEach(card => {
-        const dialBtn = card.querySelector('[data-dial]');
-        if (!dialBtn) return;
-        const dial = dialBtn.dataset.dial;
-        const country = COUNTRIES.find(c => c.dial === dial);
-        if (!country) return;
-        const info = getTimeInfo(country.tz);
-        if (!info) return;
-        const timeBox = card.querySelector('.card-time-num');
-        if (timeBox) timeBox.innerHTML = `${info.timeStr}<span class="sec">${info.secStr}</span>`;
+      document.querySelectorAll('.clock-card').forEach(clockCardElement => {
+        const countryId = clockCardElement.dataset.id;
+        if (!countryId) return;
+        const matchingCountry = COUNTRIES.find(countryItem => countryItem.id === countryId);
+        if (!matchingCountry) return;
+        const liveClockInfo = getTimeInfo(matchingCountry.tz);
+        if (!liveClockInfo) return;
+        const timeDisplayBox = clockCardElement.querySelector('.card-time-num');
+        if (timeDisplayBox) timeDisplayBox.innerHTML = `${liveClockInfo.timeStr}<span class="sec">${liveClockInfo.secStr}</span>`;
       });
     }, 1000);
   </script>
