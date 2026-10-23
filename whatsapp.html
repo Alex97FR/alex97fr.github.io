@@ -67,6 +67,10 @@
               <span>起始编号</span>
               <input id="start-number" type="number" min="1" step="1" value="1" style="width:65px;">
             </label>
+            <label class="wb-field" style="flex:1 1 180px;">
+              <span>预设消息</span>
+              <input id="message-template" placeholder="选填，如：您好！" autocomplete="off" style="width:100%;min-width:140px;">
+            </label>
           </div>
         </div>
 
@@ -90,6 +94,10 @@
             <span class="hint-inline">可从 Excel 直接复制姓名、号码两列粘贴</span>
           </div>
           <div class="wb-footer-right">
+            <button id="export-csv" class="button" type="button" disabled title="导出包含姓名、号码与链接的 CSV 表格">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              导出 CSV
+            </button>
             <button id="copy" class="button primary" type="button" disabled>复制生成结果</button>
           </div>
         </div>
@@ -117,7 +125,9 @@
       // shortcut: 裸号码优先视为已含默认区号；需要区分歧义本地号码时，应增加明确的输入格式选择。
       const phone = raw.startsWith('+') ? digits : raw.startsWith('00') ? digits.slice(2)
         : prefix && !digits.startsWith(prefix) ? prefix + digits : digits;
-      return /^[1-9]\d{6,14}$/.test(phone) ? 'https://wa.me/' + phone : '';
+      if (!/^[1-9]\d{6,14}$/.test(phone)) return '';
+      const message = setting('message-template');
+      return 'https://wa.me/' + phone + (message ? '?text=' + encodeURIComponent(message) : '');
     }
 
     function resultFor(contact, index, start) {
@@ -151,6 +161,7 @@
         link.classList.toggle('pending', !result);
       });
       $('copy').disabled = valid === 0;
+      if ($('export-csv')) $('export-csv').disabled = valid === 0;
     }
 
     function render() {
@@ -212,7 +223,32 @@
       $('status').textContent = '表格已清空。';
       $('rows').querySelector('input').focus();
     });
-    ['name-prefix', 'phone-prefix', 'start-number'].forEach(id => $(id).addEventListener('input', updateResults));
+    ['name-prefix', 'phone-prefix', 'start-number', 'message-template'].forEach(id => {
+      const el = $(id);
+      if (el) el.addEventListener('input', updateResults);
+    });
+
+    $('export-csv').addEventListener('click', () => {
+      const valid = rows.filter(contact => linkFor(contact.phone));
+      if (!valid.length) return;
+      const escapeCsvCell = val => '"' + (val || '').replace(/"/g, '""') + '"';
+      const lines = ['"序号","姓名","电话号码","WhatsApp 直达链接"'];
+      const start = startNumber();
+      valid.forEach((contact, idx) => {
+        const link = linkFor(contact.phone);
+        const name = [setting('name-prefix'), contact.name.trim()].filter(Boolean).join(' ');
+        lines.push([start + idx, escapeCsvCell(name), escapeCsvCell(contact.phone), escapeCsvCell(link)].join(','));
+      });
+      const csvContent = '\uFEFF' + lines.join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `whatsapp-links-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`已成功导出 ${valid.length} 条 CSV 记录`);
+    });
     function showToast(message) {
       if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return;
       let box = document.getElementById('toast-container');

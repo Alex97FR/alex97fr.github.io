@@ -207,23 +207,46 @@
       }).join('\r\n') + '\r\n';
     }
 
-    $('parse').addEventListener('click', () => {
+    let parseDebounceTimer = null;
+
+    function doParse(silent = false) {
+      const val = $('source').value.trim();
+      if (!val) {
+        contacts = [];
+        render();
+        $('download').disabled = true;
+        $('status').className = 'status';
+        $('status').textContent = '';
+        return;
+      }
       const result = parseContacts($('source').value);
       contacts = result.found;
       render();
       $('download').disabled = !contacts.length;
       $('status').className = 'status' + (contacts.length ? '' : ' error');
       $('status').textContent = contacts.length
-        ? `已解析 ${contacts.length} 位联系人${result.rejected.length ? `，跳过第 ${result.rejected.join('、')} 行` : ''}`
-        : '未识别到联系人，请确认每行末尾是 7–15 位电话号码，并用空格、Tab 或逗号分隔姓名';
-    });
+        ? `已解析 ${contacts.length} 位联系人${result.rejected.length ? `，跳过第 ${result.rejected.join('、')} 行（格式不符）` : ''}`
+        : '未识别到有效联系人，请确认每行末尾包含 7–15 位电话号码，并用空格、Tab 或逗号分隔姓名';
+      if (!silent && contacts.length) showToast(`已解析 ${contacts.length} 位联系人`);
+    }
+
+    $('parse').addEventListener('click', () => doParse(false));
 
     $('source').addEventListener('input', () => {
+      // 保持测试兼容性：输入瞬间重置解析态
       contacts = [];
       render();
       $('download').disabled = true;
       $('status').className = 'status';
       $('status').textContent = '输入已更新，请重新解析。';
+
+      // 防抖 300ms 自动解析预览，彻底告别繁琐点击
+      if (typeof clearTimeout === 'function') clearTimeout(parseDebounceTimer);
+      if (typeof setTimeout === 'function') {
+        parseDebounceTimer = setTimeout(() => {
+          doParse(true);
+        }, 300);
+      }
     });
 
     $('clear').addEventListener('click', () => {
